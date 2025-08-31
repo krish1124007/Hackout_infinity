@@ -12,7 +12,7 @@ export const verifyAccessToken = (req, res, next) => {
       token = req.headers.authorization.split(" ")[1]; // from Bearer token
     }
    
-
+    console.log(token)
     // 2️⃣ If no token
     if (!token) {
       return res.status(401).json({ message: "Access denied, no token provided" });

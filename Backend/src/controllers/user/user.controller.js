@@ -8,6 +8,8 @@ import { Help } from "../../models/help.model.js";
 import {OptimizationAgent} from "../../ai/findlandengine.js"
 import { SUBCD } from "../../ai/subsb.js"
 import {PlantTransport} from "../../models/planttrasport.model.js"
+import {SaveProject} from "../../models/saveproject.model.js"
+import {ProductMachine} from "../../models/productmachine.model.js"
 
 const getProfile = asyncHandler(async(req,res)=>{
     
@@ -59,12 +61,9 @@ const createHelp = asyncHandler(async(req,res)=>{
 })
 
 const findLand = asyncHandler(async(req,res)=>{
-    const {data} = req.body;
+    const data = req.body;
 
-    if(!data)
-    {
-        return returnRespones(res,400,"please Enter data",{success:false, data:"please enter data"})
-    }
+    
 
     const message = `hey i have this requirement ${data}. only return json data`;
 
@@ -97,13 +96,27 @@ const savePrePlantData = asyncHandler(async(req,res)=>{
     return returnRespones(res,200,"save data in db",{success:true , data:save_data})
 })
 
+const saveDataProject = asyncHandler(async(req,res)=>{
+    const data = req.body;
 
+    const newcreate = await SaveProject.create({userid:req.user._id,...data});
 
+    returnRespones(res,200,"object create successfully",{success:true , data:newcreate})
+
+})
+
+const sendMachines = asyncHandler(async(req,res)=>{
+    const prodcut = await ProductMachine.find({});
+
+    return returnRespones(res,"data fetch succesfully" , {success:true , data:prodcut})
+})
 
 export {
     createHelp,
     updateProfile,
     getProfile,
     findLand,
-    savePrePlantData
+    savePrePlantData,
+    saveDataProject,
+    sendMachines
 }

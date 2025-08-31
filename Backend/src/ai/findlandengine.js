@@ -1,5 +1,18 @@
 import { groq } from "../config/groq.js";
 
+
+function latLngToTile(lat, lon, zoom = 14) {
+  const tileX = Math.floor(((lon + 180) / 360) * Math.pow(2, zoom));
+  const tileY = Math.floor(
+    ((1 -
+      Math.log(Math.tan((lat * Math.PI) / 180) + 1 / Math.cos((lat * Math.PI) / 180)) /
+        Math.PI) /
+      2) *
+      Math.pow(2, zoom)
+  );
+  return `https://tile.openstreetmap.org/${zoom}/${tileX}/${tileY}.png`;
+}
+
 async function LandFinderAndOptimizer(usermessage) {
   const chatCompletion = await groq.chat.completions.create({
     messages: [
@@ -137,7 +150,10 @@ Always return results in the following JSON structure with 2–3 suggested locat
         "grid_energy_availability",
         "purchasable_land",
         "nearby_hydrogen_consumers"
-      ]
+      ],
+      "images":[{
+      "land_image_url":"find that place url where you predic the land and give me the photo of the land not city or other thing only give me the image url of that land which are usable for the plant"
+      }]
     }
   ]
 }

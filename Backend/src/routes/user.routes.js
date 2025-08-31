@@ -9,7 +9,10 @@ import {
     createHelp,
     getProfile,
     updateProfile,
-    findLand
+    findLand,
+    savePrePlantData,
+    saveDataProject,
+    sendMachines
  } from "../controllers/user/user.controller.js";
 import { Router } from "express";
 import { verifyAccessToken } from "../middlewares/auth.middleware.js"
@@ -24,6 +27,9 @@ router.route('/createhelp').post(verifyAccessToken, createHelp);
 router.route('/getprofile').post(verifyAccessToken , getProfile);
 router.route('/updateprofile').post(verifyAccessToken , updateProfile);
 router.route('/findland').post(findLand);
+router.route('/saveoldplantdata').post(verifyAccessToken , savePrePlantData);
+router.route('/saveproject').post(verifyAccessToken,saveDataProject);
+router.route('/getmachines').post(sendMachines)
 
 
 
