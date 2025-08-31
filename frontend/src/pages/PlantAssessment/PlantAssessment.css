@@ -1,0 +1,334 @@
+.assessment-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+  }
+  
+  .assessment-header {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2c3e50;
+  }
+  
+  .assessment-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    background: linear-gradient(45deg, #2c3e50, #4ca1af);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .assessment-header p {
+    font-size: 1.1rem;
+    color: #7f8c8d;
+  }
+  
+  .progress-bar {
+    height: 10px;
+    background-color: #ecf0f1;
+    border-radius: 5px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .progress {
+    height: 100%;
+    background: linear-gradient(45deg, #4ca1af, #2c3e50);
+    border-radius: 5px;
+    transition: width 0.3s ease;
+  }
+  
+  .step-indicator {
+    position: absolute;
+    right: 10px;
+    top: -25px;
+    color: #4ca1af;
+    font-weight: bold;
+  }
+  
+  .assessment-form {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-section h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #4ca1af;
+  }
+  
+  .input-group {
+    margin-bottom: 20px;
+  }
+  
+  .input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  
+  .input-group input,
+  .input-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+  }
+  
+  .input-group input:focus,
+  .input-group textarea:focus {
+    border-color: #4ca1af;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 161, 175, 0.2);
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+  }
+  
+  .btn-prev,
+  .btn-next,
+  .btn-submit,
+  .btn-home {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-prev {
+    background-color: #ecf0f1;
+    color: #7f8c8d;
+  }
+  
+  .btn-prev:hover {
+    background-color: #bdc3c7;
+  }
+  
+  .btn-next,
+  .btn-submit {
+    background: linear-gradient(45deg, #4ca1af, #2c3e50);
+    color: white;
+  }
+  
+  .btn-next:hover,
+  .btn-submit:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .processing-animation,
+  .success-animation {
+    text-align: center;
+    padding: 50px 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  .loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #4ca1af;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 30px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .checkmark {
+    color: #4CAF50;
+    font-size: 60px;
+    line-height: 80px;
+    margin: 0 auto 30px;
+    width: 80px;
+    height: 80px;
+    border: 3px solid #4CAF50;
+    border-radius: 50%;
+    animation: scaleUp 0.5s ease;
+  }
+  
+  @keyframes scaleUp {
+    0% { transform: scale(0); }
+    80% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  
+  .success-animation h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+  }
+  
+  .success-animation p {
+    color: #7f8c8d;
+    margin-bottom: 30px;
+    font-size: 18px;
+  }
+  
+  .btn-home {
+    background: linear-gradient(45deg, #4ca1af, #2c3e50);
+    color: white;
+  }
+  
+  .btn-home:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  @media (max-width: 768px) {
+    .assessment-container {
+      padding: 15px;
+    }
+    
+    .assessment-header h1 {
+      font-size: 2rem;
+    }
+    
+    .assessment-form {
+      padding: 20px;
+    }
+    
+    .button-group {
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .btn-prev,
+    .btn-next,
+    .btn-submit {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  /* Add these styles to your existing CSS */
+
+.location-method-selector {
+    margin-bottom: 20px;
+  }
+  
+  .location-method-selector label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .radio-option {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .radio-option:hover {
+    border-color: #4ca1af;
+    background-color: #f8f9fa;
+  }
+  
+  .radio-option input {
+    margin-right: 10px;
+  }
+  
+  .location-loading {
+    text-align: center;
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
+  
+  .location-spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #4ca1af;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 10px;
+  }
+  
+  .manual-coordinates {
+    margin-top: 20px;
+  }
+  
+  .error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .error-message i {
+    margin-right: 10px;
+  }
+  
+  .location-preview {
+    background-color: #e8f5e9;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  
+  .location-preview p {
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .coordinates {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .coordinates span {
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .coordinates {
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .radio-group {
+      gap: 8px;
+    }
+  }

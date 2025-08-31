@@ -2,424 +2,420 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import * as THREE from 'three';
 
-// Fix for default markers in Leaflet
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
-
-// Register ScrollTrigger plugin
-gsap.registerPlugin(ScrollTrigger);
+// Register GSAP plugins
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const LandingPage = () => {
   const [mapExpanded, setMapExpanded] = useState(false);
   const [countersAnimated, setCountersAnimated] = useState(false);
-  const statsRef = useRef(null);
+  const [activeElectrolysis, setActiveElectrolysis] = useState(0);
   const navigate = useNavigate();
   
-  // Refs for GSAP animations
+  // Refs for animations
+  const heroRef = useRef(null);
   const heroContentRef = useRef(null);
   const heroVisualRef = useRef(null);
   const featureCardsRef = useRef([]);
-  const statsRefs = useRef([]);
+  const statsRef = useRef(null);
+  const statsItemsRef = useRef([]);
   const useCasesRef = useRef([]);
-  const sectionTitleRef = useRef(null);
+  const electrolysisRef = useRef([]);
+  const processStepsRef = useRef([]);
   const ctaRef = useRef(null);
   const mapContainerRef = useRef(null);
-  const mapRef = useRef(null);
   const threeDModelRef = useRef(null);
+  const sectionTitlesRef = useRef([]);
+  const atomsRef = useRef([]);
 
-  // Initialize Leaflet map
-  useEffect(() => {
-    if (mapExpanded && mapContainerRef.current && !mapRef.current) {
-      // Initialize map
-      mapRef.current = L.map(mapContainerRef.current, {
-        zoomControl: false,
-        attributionControl: false
-      }).setView([51.505, -0.09], 13);
-      
-      // Add tile layer
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-      }).addTo(mapRef.current);
-      
-      // Add custom markers
-      const hydrogenIcon = L.divIcon({
-        className: 'hydrogen-marker',
-        html: '<div class="pulse-dot"></div><i class="fas fa-industry"></i>',
-        iconSize: [30, 30],
-        iconAnchor: [15, 15]
-      });
-      
-      // Sample markers for hydrogen facilities
-      const facilities = [
-        { lat: 51.505, lng: -0.09, name: 'London Hydrogen Plant' },
-        { lat: 51.51, lng: -0.08, name: 'Thames Hydrogen Hub' },
-        { lat: 51.50, lng: -0.10, name: 'Green Energy Station' },
-        { lat: 51.515, lng: -0.095, name: 'Eco Fuel Center' }
-      ];
-      
-      facilities.forEach(facility => {
-        L.marker([facility.lat, facility.lng], { icon: hydrogenIcon })
-          .addTo(mapRef.current)
-          .bindPopup(facility.name);
-      });
-      
-      // Add zoom control
-      L.control.zoom({ position: 'bottomright' }).addTo(mapRef.current);
-      
-      // Fit map to show all markers
-      const group = new L.featureGroup(facilities.map(f => L.marker([f.lat, f.lng])));
-      mapRef.current.fitBounds(group.getBounds().pad(0.1));
+  // Electrolysis methods data
+  const electrolysisMethods = [
+    {
+      name: "Alkaline Electrolysis",
+      icon: "fas fa-flask",
+      efficiency: "65-80%",
+      description: "The most mature and cost-effective technology using liquid alkaline electrolyte (KOH). Proven technology with lower capital costs and long operational life.",
+      advantages: ["Lower capital costs", "Proven technology", "Long lifespan (60,000+ hours)", "Good for large-scale production"],
+      disadvantages: ["Lower efficiency", "Slower response time", "Uses corrosive electrolyte"]
+    },
+    {
+      name: "PEM Electrolysis",
+      icon: "fas fa-microchip",
+      efficiency: "75-85%",
+      description: "Uses a solid polymer electrolyte membrane for high efficiency and rapid response. Ideal for renewable energy integration with excellent dynamic operation.",
+      advantages: ["High efficiency", "Fast response time", "Compact design", "Pure hydrogen output"],
+      disadvantages: ["Higher capital costs", "Requires pure water", "Shorter lifespan"]
+    },
+    {
+      name: "Solid Oxide Electrolysis",
+      icon: "fas fa-fire",
+      efficiency: "85-95%",
+      description: "High-temperature electrolysis using solid ceramic electrolyte. Highest efficiency but requires significant heat input and careful thermal management.",
+      advantages: ["Highest efficiency", "Can use steam", "Reversible operation", "High-grade waste heat"],
+      disadvantages: ["High operating temperature", "Complex thermal management", "Development stage"]
     }
+  ];
+// Add this to your existing useEffect hooks
+useEffect(() => {
+  // Initialize Three.js animation for the hydrogen network
+  const initThreeJS = () => {
+    const canvas = document.querySelector('.hydrogen-canvas');
+    if (!canvas) return;
+    
+    // Simplified Three.js setup (you would need to import Three.js)
+    const renderer = new THREE.WebGLRenderer({ 
+      canvas, 
+      alpha: true,
+      antialias: true 
+    });
+    renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+    
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+      75, 
+      canvas.offsetWidth / canvas.offsetHeight, 
+      0.1, 
+      1000
+    );
+    camera.position.z = 5;
+    
+    // Create hydrogen molecules
+    const molecules = [];
+    for (let i = 0; i < 20; i++) {
+      const geometry = new THREE.SphereGeometry(0.1, 16, 16);
+      const material = new THREE.MeshBasicMaterial({ 
+        color: 0x67C090,
+        transparent: true,
+        opacity: 0.6
+      });
+      const molecule = new THREE.Mesh(geometry, material);
+      
+      // Random position
+      molecule.position.x = (Math.random() - 0.5) * 10;
+      molecule.position.y = (Math.random() - 0.5) * 10;
+      molecule.position.z = (Math.random() - 0.5) * 5;
+      
+      scene.add(molecule);
+      molecules.push(molecule);
+    }
+    
+    // Animation loop
+    const animate = () => {
+      requestAnimationFrame(animate);
+      
+      // Rotate molecules
+      molecules.forEach(molecule => {
+        molecule.rotation.x += 0.01;
+        molecule.rotation.y += 0.02;
+      });
+      
+      renderer.render(scene, camera);
+    };
+    
+    animate();
+    
+    // Handle resize
+    const handleResize = () => {
+      camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+    };
+    
+    window.addEventListener('resize', handleResize);
     
     return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-      }
+      window.removeEventListener('resize', handleResize);
     };
-  }, [mapExpanded]);
-
-  // 3D model animation with GSAP
+  };
+  
+  // Initialize if Three.js is available
+  if (typeof THREE !== 'undefined') {
+    initThreeJS();
+  }
+}, []);
+  // Initialize animations with GSAP
   useEffect(() => {
-    if (threeDModelRef.current) {
-      gsap.to(threeDModelRef.current, {
-        rotationY: 360,
-        duration: 20,
-        repeat: -1,
-        ease: "none"
-      });
-    }
-  }, []);
-
-  // Initialize GSAP animations
-  useEffect(() => {
-    // Hero section animations
-    const heroTl = gsap.timeline();
-    heroTl.fromTo(heroContentRef.current, 
-      { opacity: 0, y: 100 },
-      { 
-        opacity: 1, 
-        y: 0, 
-        duration: 1.5,
-        ease: "power3.out",
-      }
-    ).fromTo(heroVisualRef.current, 
-      { opacity: 0, x: 100, rotationY: 180 },
-      { 
-        opacity: 1, 
-        x: 0, 
-        rotationY: 0,
-        duration: 1.5,
-        ease: "power3.out",
-      }, "-=1"
+    // Hero section animation
+    gsap.fromTo(heroContentRef.current, 
+      { opacity: 0, y: 50 },
+      { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
     );
     
-    // Animated background elements
-    gsap.to('.floating-particle', {
-      y: -20,
-      x: "random(-20, 20)",
-      rotation: "random(-30, 30)",
-      duration: "random(3, 5)",
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-      stagger: 0.2
+    gsap.fromTo(heroVisualRef.current, 
+      { opacity: 0, scale: 0.8, rotationY: -15 },
+      { opacity: 1, scale: 1, rotationY: 0, duration: 1.2, ease: "power3.out", delay: 0.3 }
+    );
+
+    // Animate floating atoms
+    atomsRef.current.forEach((atom, i) => {
+      gsap.to(atom, {
+        y: -20,
+        rotation: 360,
+        duration: 3 + i,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut"
+      });
+    });
+
+    // Section title animations
+    sectionTitlesRef.current.forEach(title => {
+      gsap.fromTo(title, 
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          scrollTrigger: {
+            trigger: title,
+            start: "top 80%",
+            toggleActions: "play none none none"
+          }
+        }
+      );
     });
 
     // Feature cards animation
-    gsap.fromTo(featureCardsRef.current, 
-      { 
-        opacity: 0, 
-        y: 100,
-        rotationX: -45
-      },
-      {
-        opacity: 1,
-        y: 0,
-        rotationX: 0,
-        duration: 1.2,
-        stagger: 0.3,
-        scrollTrigger: {
-          trigger: '.features',
-          start: 'top 85%',
-          toggleActions: 'play none none reverse'
-        }
+    featureCardsRef.current.forEach((card, i) => {
+      if (card) {
+        gsap.fromTo(card, 
+          { opacity: 0, y: 50 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            delay: i * 0.2,
+            scrollTrigger: {
+              trigger: card,
+              start: "top 85%",
+              toggleActions: "play none none none"
+            }
+          }
+        );
       }
-    );
-    
-    // Section title animations
-    gsap.fromTo('.section-title', 
-      { opacity: 0, y: 80, skewY: 5 },
+    });
+
+    // Stats animation
+    gsap.fromTo(statsRef.current, 
+      { opacity: 0 },
       {
         opacity: 1,
-        y: 0,
-        skewY: 0,
-        duration: 1.2,
-        stagger: 0.2,
-        scrollTrigger: {
-          trigger: '.section-title',
-          start: 'top 90%',
-          toggleActions: 'play none none reverse'
-        }
-      }
-    );
-    
-    // Stats counter animation
-    gsap.fromTo(statsRefs.current, 
-      { 
-        opacity: 0, 
-        y: 50,
-        scale: 0.8 
-      },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
         duration: 1,
-        stagger: 0.2,
         scrollTrigger: {
-          trigger: '.stats',
-          start: 'top 85%',
-          toggleActions: 'play none none reverse'
-        }
+          trigger: statsRef.current,
+          start: "top 80%",
+          toggleActions: "play none none none"
+        },
+        onEnter: () => animateCounters()
       }
     );
-    
+
     // Use cases animation
-    gsap.fromTo(useCasesRef.current, 
-      { 
-        opacity: 0, 
-        x: -100,
-        rotationZ: -5 
-      },
-      {
-        opacity: 1,
-        x: 0,
-        rotationZ: 0,
-        duration: 1.1,
-        stagger: 0.25,
-        scrollTrigger: {
-          trigger: '.use-cases',
-          start: 'top 85%',
-          toggleActions: 'play none none reverse'
-        }
+    useCasesRef.current.forEach((item, i) => {
+      if (item) {
+        gsap.fromTo(item, 
+          { opacity: 0, x: -30 },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.8,
+            delay: i * 0.15,
+            scrollTrigger: {
+              trigger: item,
+              start: "top 85%",
+              toggleActions: "play none none none"
+            }
+          }
+        );
       }
-    );
-    
-    // CTA section animation
+    });
+
+    // Electrolysis methods animation
+    electrolysisRef.current.forEach((method, i) => {
+      if (method) {
+        gsap.fromTo(method, 
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            delay: i * 0.2,
+            scrollTrigger: {
+              trigger: method,
+              start: "top 85%",
+              toggleActions: "play none none none"
+            }
+          }
+        );
+      }
+    });
+
+    // Process steps animation
+    processStepsRef.current.forEach((step, i) => {
+      if (step) {
+        gsap.fromTo(step, 
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            delay: i * 0.15,
+            scrollTrigger: {
+              trigger: step,
+              start: "top 85%",
+              toggleActions: "play none none none"
+            }
+          }
+        );
+      }
+    });
+
+    // CTA animation
     gsap.fromTo(ctaRef.current, 
-      { 
-        opacity: 0, 
-        y: 80,
-        scale: 0.95 
-      },
+      { opacity: 0 },
       {
         opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 1.3,
+        duration: 1,
         scrollTrigger: {
-          trigger: '.cta',
-          start: 'top 85%',
-          toggleActions: 'play none none reverse'
+          trigger: ctaRef.current,
+          start: "top 80%",
+          toggleActions: "play none none none"
         }
       }
     );
-    
-    // Interactive map animation
-    gsap.fromTo('.interactive-map', 
-      { 
-        opacity: 0, 
-        y: 100,
-        rotationX: 15 
-      },
-      {
-        opacity: 1,
-        y: 0,
-        rotationX: 0,
-        duration: 1.4,
-        scrollTrigger: {
-          trigger: '.interactive-map',
-          start: 'top 90%',
-          toggleActions: 'play none none reverse'
-        }
-      }
-    );
-    
-    // Clean up ScrollTrigger on component unmount
+
+    // Clean up
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, []);
 
-  // Smooth scroll function
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      gsap.to(window, {
-        duration: 1.5,
-        scrollTo: element,
-        ease: "power2.inOut"
-      });
-    }
-  };
+  // Electrolysis carousel effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveElectrolysis(prev => (prev + 1) % electrolysisMethods.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Counter animation
   const animateCounters = () => {
     if (countersAnimated) return;
     
     const counters = document.querySelectorAll('.stat-number');
-    counters.forEach(counter => {
+    counters.forEach((counter, index) => {
       const target = parseInt(counter.textContent.replace(/[^\d]/g, ''));
       const suffix = counter.textContent.replace(/[\d\.\,]/g, '');
+      let current = 0;
       
-      gsap.to(counter, {
-        innerText: target,
-        duration: 3,
-        snap: { innerText: 1 },
-        stagger: 0.5,
-        onUpdate: function() {
-          counter.textContent = Math.floor(this.targets()[0].innerText) + suffix;
-        },
-        ease: "elastic.out(1, 0.3)"
-      });
+      const increment = target / 50;
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        counter.textContent = Math.floor(current) + suffix;
+      }, 50);
     });
     
     setCountersAnimated(true);
   };
 
-  // Intersection Observer for counter animation
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            animateCounters();
-          }
-        });
-      },
-      { threshold: 0.5, rootMargin: '0px 0px -100px 0px' }
-    );
-
-    if (statsRef.current) {
-      observer.observe(statsRef.current);
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
 
-    return () => observer.disconnect();
-  }, [countersAnimated]);
-
-  // Enhanced floating particles effect with hydrogen theme
-  useEffect(() => {
-    const createFloatingParticle = () => {
-      const particle = document.createElement('div');
-      const size = Math.random() * 8 + 4;
-      particle.classList.add('floating-particle');
-      particle.style.position = 'fixed';
-      particle.style.width = size + 'px';
-      particle.style.height = size + 'px';
-      particle.style.background = 'radial-gradient(circle, var(--accent-mint) 0%, var(--accent-aqua) 70%, transparent 100%)';
-      particle.style.borderRadius = '50%';
-      particle.style.left = Math.random() * window.innerWidth + 'px';
-      particle.style.top = window.innerHeight + 50 + 'px';
-      particle.style.pointerEvents = 'none';
-      particle.style.zIndex = '1';
-      particle.style.boxShadow = '0 0 15px 3px rgba(144, 238, 144, 0.7)';
-      particle.style.opacity = '0';
-      
-      document.getElementById('particle-container').appendChild(particle);
-      
-      gsap.to(particle, {
-        y: -window.innerHeight - 100,
-        x: `+=${(Math.random() - 0.5) * 200}`,
-        rotation: Math.random() * 360,
-        opacity: 0.8,
-        duration: Math.random() * 10 + 10,
-        ease: "none",
-        onComplete: () => {
-          if (particle.parentNode) particle.remove();
-        }
-      });
-    };
-
-    const interval = setInterval(createFloatingParticle, 300);
-    return () => clearInterval(interval);
-  }, []);
+  const handleConvert = () => {
+    navigate('/assessment');
+  }
 
   const toggleMapView = () => {
     setMapExpanded(!mapExpanded);
-    if (!mapExpanded) {
-      // Animate map expansion
-      gsap.to('.interactive-map', {
-        height: 500,
-        duration: 1,
-        ease: "power2.inOut"
-      });
-    } else {
-      // Animate map contraction
-      gsap.to('.interactive-map', {
-        height: 300,
-        duration: 1,
-        ease: "power2.inOut"
-      });
-    }
   };
 
   const handleButtonClick = (e) => {
     const button = e.currentTarget;
-    const ripple = document.createElement('span');
-    const rect = button.getBoundingClientRect();
-    const size = Math.max(rect.height, rect.width);
-    const x = e.clientX - rect.left - size / 2;
-    const y = e.clientY - rect.top - size / 2;
-    
-    ripple.style.width = ripple.style.height = size + 'px';
-    ripple.style.left = x + 'px';
-    ripple.style.top = y + 'px';
-    ripple.classList.add('ripple');
-    
-    button.appendChild(ripple);
-    
-    // GSAP animation for button click
+  
     gsap.to(button, {
-      scale: 0.9,
+      scale: 0.95,
       duration: 0.1,
       yoyo: true,
       repeat: 1,
-      ease: "power2.inOut",
       onComplete: () => {
-        navigate('/auth');
-      }
+        const token = localStorage.getItem("token");
+  
+        if (token) {
+          navigate("/dashboard");
+        } else {
+          navigate("/auth")
+        }
+      },
     });
-    
-    setTimeout(() => {
-      if (ripple.parentNode) ripple.remove();
-    }, 600);
   };
+  
+
+  // Component for creating hydrogen atoms
+  const HydrogenAtom = ({ size = 40, className = "", style = {} }) => (
+    <div 
+      className={`hydrogen-atom ${className}`} 
+      style={{ width: size, height: size, ...style }}
+      ref={el => atomsRef.current.push(el)}
+    >
+      <div className="proton" style={{
+        width: size * 0.2 + 'px',
+        height: size * 0.2 + 'px',
+        top: '50%',
+        left: '50%'
+      }}></div>
+      <div className="electron-orbit" style={{
+        width: size * 0.8 + 'px',
+        height: size * 0.8 + 'px',
+        top: '50%',
+        left: '50%'
+      }}>
+        <div className="electron" style={{
+          width: size * 0.15 + 'px',
+          height: size * 0.15 + 'px',
+          top: -(size * 0.075) + 'px',
+          left: '50%',
+          transform: 'translateX(-50%)'
+        }}></div>
+      </div>
+    </div>
+  );
 
   return (
     <>
       <style>{`
-          :root {
-          --primary-dark: #081C15;
-          --secondary-dark: #1B4332;
-          --accent-teal: #2D9CDB;
-          --accent-green: #27AE60;
-          --accent-mint: #90EE90;
-          --accent-aqua: #20B2AA;
-          --text-light: #F8F9FA;
-          --text-muted: #ADB5BD;
-          --gradient-primary: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-teal) 100%);
-          --gradient-secondary: linear-gradient(135deg, var(--accent-mint) 0%, var(--accent-aqua) 100%);
-          --glow-primary: 0 0 20px rgba(39, 174, 96, 0.6);
-          --glow-secondary: 0 0 15px rgba(45, 156, 219, 0.5);
-          --gradient-overlay: linear-gradient(135deg, rgba(8, 28, 21, 0.9) 0%, rgba(27, 67, 50, 0.7) 100%);
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+          --primary-light: #DDF4E7;
+          --primary-green: #67C090;
+          --primary-teal: #26667F;
+          --primary-dark: #124170;
+          --accent-purple: #8A4FFF;
+          --accent-pink: #FF6B9D;
+          --text-dark: #1a1a1a;
+          --text-light: #ffffff;
+          --text-muted: #6c757d;
+          --gradient-primary: linear-gradient(135deg, #67C090 0%, #26667F 100%);
+          --gradient-secondary: linear-gradient(135deg, #26667F 0%, #124170 100%);
+          --gradient-accent: linear-gradient(135deg, #DDF4E7 0%, #67C090 100%);
+          --gradient-hero: linear-gradient(135deg, #8A4FFF 0%, #26667F 50%, #67C090 100%);
+          --gradient-feature: linear-gradient(135deg, #FF6B9D 0%, #8A4FFF 100%);
+          --shadow-primary: 0 10px 30px rgba(18, 65, 112, 0.15);
+          --shadow-hover: 0 20px 40px rgba(18, 65, 112, 0.25);
+          --border-radius: 16px;
+          --border-radius-lg: 24px;
         }
 
         * {
@@ -429,14 +425,14 @@ const LandingPage = () => {
         }
 
         body {
-          background: var(--primary-dark);
-          color: var(--text-light);
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background: linear-gradient(135deg, #f8fffe 0%, #f0f9f4 100%);
+          color: var(--text-dark);
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           line-height: 1.6;
           overflow-x: hidden;
         }
 
-        #particle-container {
+        #atom-container {
           position: fixed;
           top: 0;
           left: 0;
@@ -444,12 +440,51 @@ const LandingPage = () => {
           height: 100%;
           pointer-events: none;
           z-index: 1;
+          overflow: hidden;
         }
 
-        .floating-particle {
+        .hydrogen-atom {
           position: absolute;
+          pointer-events: none;
+        }
+
+        .proton {
+          position: absolute;
+          background: radial-gradient(circle, #ff6b6b 0%, #e55656 100%);
           border-radius: 50%;
-          z-index: 1;
+          box-shadow: 0 0 15px rgba(255, 107, 107, 0.6);
+          animation: protonPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes protonPulse {
+          0%, 100% { transform: translate(-50%, -50%) scale(1); }
+          50% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .electron-orbit {
+          position: absolute;
+          border: 1px solid rgba(103, 192, 144, 0.4);
+          border-radius: 50%;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+        }
+
+        .electron {
+          position: absolute;
+          background: radial-gradient(circle, #67C090 0%, #26667F 100%);
+          border-radius: 50%;
+          box-shadow: 0 0 10px rgba(103, 192, 144, 0.8);
+          animation: electronGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes electronGlow {
+          0%, 100% { box-shadow: 0 0 10px rgba(103, 192, 144, 0.8); }
+          50% { box-shadow: 0 0 20px rgba(103, 192, 144, 1); }
+        }
+
+        @keyframes atomRotate {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
         .bg-animation {
@@ -458,12 +493,12 @@ const LandingPage = () => {
           left: 0;
           width: 100%;
           height: 100%;
-          z-index: -1;
-          opacity: 0.1;
+          z-index: -2;
+          opacity: 0.05;
           background: 
-            radial-gradient(circle at 20% 50%, var(--accent-aqua) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, var(--accent-green) 0%, transparent 50%),
-            radial-gradient(circle at 40% 80%, var(--accent-teal) 0%, transparent 50%);
+            radial-gradient(circle at 20% 50%, #8A4FFF 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, #26667F 0%, transparent 50%),
+            radial-gradient(circle at 40% 80%, #FF6B9D 0%, transparent 50%);
           animation: float 30s ease-in-out infinite;
         }
 
@@ -482,116 +517,143 @@ const LandingPage = () => {
         .hero {
           display: flex;
           align-items: center;
+          min-height: 100vh;
           position: relative;
           overflow: hidden;
-          padding: 70px 0 50px;
+          padding: 100px 0 80px;
         }
 
         .hero::before {
-          content: '';
+          content: "";
           position: absolute;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: 
-            linear-gradient(
-              90deg, 
-              var(--primary-dark) 0%, 
-              transparent 40%
-            ),
-            url('/images/hero_Image.webp') no-repeat right center;
+          background-image: url('./images/plant.gif');
           background-size: cover;
-          z-index: -2;
-          transform: scale(1.1);
-          transition: transform 10s ease;
-        }
-
-        .hero:hover::before {
-          transform: scale(1.05);
+          background-position: center;
+          filter: blur(2px);         
+          transform: scale(1.1);     
+          z-index: -1;                
         }
 
         .hero::after {
-          content: '';
+          content: "";
           position: absolute;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: var(--gradient-overlay);
+          background: rgba(0, 0, 0, 0.64);
           z-index: -1;
+        }
+
+
+        @keyframes heroBlob {
+          0%, 100% { 
+            transform: translate(0, 0) rotate(0deg); 
+            border-radius: 50%;
+          }
+          25% { 
+            transform: translate(-50px, 50px) rotate(90deg); 
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+          }
+          50% { 
+            transform: translate(0, 100px) rotate(180deg); 
+            border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+          }
+          75% { 
+            transform: translate(50px, 50px) rotate(270deg); 
+            border-radius: 40% 60%;
+          }
         }
 
         .hero-content {
           position: relative;
           z-index: 2;
           max-width: 600px;
-          backdrop-filter: blur(5px);
-          padding: 2rem;
-          border-radius: 20px;
-          background: rgba(8, 28, 21, 0.3);
-          border: 1px solid rgba(39, 174, 96, 0.2);
         }
 
         .hero-content h1 {
-          font-size: 3.5rem;
+          font-size: 3.8rem;
           font-weight: 800;
           background: var(--gradient-primary);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
           margin-bottom: 1.5rem;
-          line-height: 1.2;
-          text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+          line-height: 1.1;
+          letter-spacing: -0.02em;
+          text-shadow : 0px 0px 1px rgba(0, 199, 30, 0.34);
         }
 
         .hero-content p {
-          font-size: 1.2rem;
-          color: var(--text-muted);
-          margin-bottom: 2rem;
-          line-height: 1.7;
+          font-size: 1.25rem;
+          color: white;
+          margin-bottom: 2.5rem;
+          line-height: 1.6;
+          font-weight: 400;
+          text-shadow : 0px 0px 10px black;
         }
 
         .btn-primary-custom {
           background: var(--gradient-primary);
           border: none;
-          padding: 16px 45px;
+          padding: 18px 36px;
           font-weight: 600;
-          font-size: 1.1rem;
+          font-size: 1rem;
           border-radius: 50px;
-          text-transform: uppercase;
-          letter-spacing: 1.5px;
-          transition: all 0.4s ease;
-          box-shadow: var(--glow-primary);
+          letter-spacing: 0.5px;
+          transition: all 0.3s ease;
+          box-shadow: var(--shadow-primary);
           position: relative;
           overflow: hidden;
           color: var(--text-light);
           transform: translateY(0);
+          cursor: pointer;
+        }
+
+        .btn-primary-custom::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+          transition: 0.5s;
+        }
+
+        .btn-primary-custom:hover::before {
+          left: 100%;
         }
 
         .btn-primary-custom:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 15px 35px rgba(39, 174, 96, 0.6);
+          transform: translateY(-3px);
+          box-shadow: var(--shadow-hover);
           color: var(--text-light);
         }
 
-        .btn-outline-success-custom {
-          border: 2px solid var(--accent-teal);
-          color: var(--accent-teal);
+        .btn-outline-custom {
+          border: 2px solid var(--primary-teal);
+          color: rgb(255,255,255);
           background: transparent;
-          padding: 14px 35px;
+          padding: 16px 36px;
           border-radius: 50px;
-          font-weight: 600;
-          letter-spacing: 1.5px;
-          transition: all 0.4s ease;
+          font-weight: 800;
+          letter-spacing: 0.5px;
+          transition: all 0.3s ease;
           position: relative;
           overflow: hidden;
+          cursor: pointer;
+          box-shadow :inset 0px 0px 20px var(--primary-teal), 0px 0px 20px var(--primary-teal);
+         
         }
 
-        .btn-outline-success-custom:hover {
-          background: var(--accent-teal);
-          color: var(--primary-dark);
-          box-shadow: var(--glow-secondary);
+        .btn-outline-custom:hover {
+          background: var(--primary-teal);
+          color: var(--text-light);
           transform: translateY(-3px);
         }
 
@@ -603,13 +665,13 @@ const LandingPage = () => {
 
         .map-preview {
           width: 100%;
-          height: 400px;
-          background: var(--secondary-dark);
-          border-radius: 20px;
-          border: 2px solid rgba(39, 174, 96, 0.3);
+          height: 450px;
+          background: var(--text-light);
+          border-radius: var(--border-radius-lg);
+          border: 1px solid rgba(103, 192, 144, 0.2);
           position: relative;
           overflow: hidden;
-          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+          box-shadow: var(--shadow-primary);
           transform-style: preserve-3d;
         }
 
@@ -622,51 +684,50 @@ const LandingPage = () => {
           transform: translate(-50%, -50%);
           background: conic-gradient(
             from 0deg at 50% 50%,
-            var(--accent-teal),
-            var(--accent-green),
-            var(--accent-mint),
-            var(--accent-aqua),
-            var(--accent-teal)
+            #67C090,
+            #26667F,
+            #124170,
+            #67C090
           );
           border-radius: 50%;
-          filter: blur(15px) opacity(0.7);
+          filter: blur(15px) opacity(0.8);
           transform-style: preserve-3d;
           animation: hydrogenGlow 4s ease-in-out infinite;
         }
 
         @keyframes hydrogenGlow {
           0%, 100% { 
-            filter: blur(15px) opacity(0.7);
+            filter: blur(15px) opacity(0.8);
             transform: translate(-50%, -50%) scale(1);
           }
           50% { 
-            filter: blur(25px) opacity(0.9);
+            filter: blur(25px) opacity(1);
             transform: translate(-50%, -50%) scale(1.1);
           }
         }
 
-        .electron {
+        .model-electron {
           position: absolute;
-          width: 20px;
-          height: 20px;
-          background: radial-gradient(circle, var(--accent-mint) 0%, transparent 70%);
+          width: 16px;
+          height: 16px;
+          background: radial-gradient(circle, #67C090 0%, transparent 70%);
           border-radius: 50%;
           top: 50%;
           left: 50%;
           transform-origin: 100px;
         }
 
-        .electron:nth-child(1) { 
+        .model-electron:nth-child(1) { 
           animation: orbitElectron1 6s linear infinite;
           transform: rotate(0deg) translateX(100px) rotate(0deg);
         }
         
-        .electron:nth-child(2) { 
+        .model-electron:nth-child(2) { 
           animation: orbitElectron2 8s linear infinite;
           transform: rotate(120deg) translateX(100px) rotate(-120deg);
         }
         
-        .electron:nth-child(3) { 
+        .model-electron:nth-child(3) { 
           animation: orbitElectron3 10s linear infinite;
           transform: rotate(240deg) translateX(100px) rotate(-240deg);
         }
@@ -686,23 +747,14 @@ const LandingPage = () => {
           100% { transform: rotate(600deg) translateX(100px) rotate(-600deg); }
         }
 
-        .map-overlay {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          text-align: center;
-          z-index: 10;
-        }
-
         .pulse-dot {
-          width: 15px;
-          height: 15px;
-          background: var(--accent-teal);
+          width: 12px;
+          height: 12px;
+          background: #67C090;
           border-radius: 50%;
           position: absolute;
           animation: pulse 2s infinite;
-          box-shadow: 0 0 0 0 rgba(45, 156, 219, 0.7);
+          box-shadow: 0 0 0 0 rgba(103, 192, 144, 0.7);
         }
 
         .pulse-dot:nth-child(1) { top: 30%; left: 20%; animation-delay: 0s; }
@@ -712,21 +764,21 @@ const LandingPage = () => {
         @keyframes pulse {
           0% { 
             transform: scale(1); 
-            box-shadow: 0 0 0 0 rgba(45, 156, 219, 0.7); 
+            box-shadow: 0 0 0 0 rgba(103, 192, 144, 0.7); 
           }
           70% { 
-            transform: scale(1.3); 
-            box-shadow: 0 0 0 15px rgba(45, 156, 219, 0); 
+            transform: scale(1.5); 
+            box-shadow: 0 0 0 15px rgba(103, 192, 144, 0); 
           }
           100% { 
             transform: scale(1); 
-            box-shadow: 0 0 0 0 rgba(45, 156, 219, 0); 
+            box-shadow: 0 0 0 0 rgba(103, 192, 144, 0); 
           }
         }
 
         .features {
           padding: 120px 0;
-          background: var(--secondary-dark);
+          background: var(--text-light);
           position: relative;
           overflow: hidden;
         }
@@ -734,13 +786,14 @@ const LandingPage = () => {
         .features::before {
           content: '';
           position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: 
-            radial-gradient(circle at 20% 30%, rgba(39, 174, 96, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 70%, rgba(45, 156, 219, 0.1) 0%, transparent 50%);
+          top: -100px;
+          left: -100px;
+          width: 300px;
+          height: 300px;
+          background: var(--gradient-feature);
+          border-radius: 50%;
+          filter: blur(80px);
+          opacity: 0.05;
           z-index: 0;
         }
 
@@ -760,6 +813,7 @@ const LandingPage = () => {
           margin-bottom: 1.5rem;
           position: relative;
           display: inline-block;
+          letter-spacing: -0.02em;
         }
 
         .section-title h2::after {
@@ -775,25 +829,26 @@ const LandingPage = () => {
         }
 
         .section-title p {
-          font-size: 1.3rem;
+          font-size: 1.2rem;
           color: var(--text-muted);
           max-width: 600px;
           margin: 0 auto;
+          font-weight: 400;
         }
 
         .feature-card {
-          background: rgba(27, 67, 50, 0.8);
-          border: 1px solid rgba(39, 174, 96, 0.3);
-          border-radius: 20px;
+          background: var(--text-light);
+          border: 1px solid rgba(103, 192, 144, 0.1);
+          border-radius: var(--border-radius-lg);
           padding: 40px 30px;
           text-align: center;
           transition: all 0.4s ease;
           height: 100%;
-          backdrop-filter: blur(10px);
           position: relative;
           overflow: hidden;
           transform-style: preserve-3d;
-          perspective: 1000px;
+          box-shadow: 0 5px 25px rgba(18, 65, 112, 0.06);
+          backdrop-filter: blur(10px);
         }
 
         .feature-card::before {
@@ -803,56 +858,66 @@ const LandingPage = () => {
           left: 0;
           width: 100%;
           height: 100%;
-          background: linear-gradient(135deg, rgba(39, 174, 96, 0.15) 0%, rgba(45, 156, 219, 0.15) 100%);
+          background: var(--gradient-accent);
           opacity: 0;
           transition: opacity 0.4s ease;
           z-index: -1;
         }
 
         .feature-card:hover {
-          transform: translateY(-15px) rotateX(5deg);
-          border-color: var(--accent-green);
-          box-shadow: 0 25px 50px rgba(39, 174, 96, 0.2);
+          transform: translateY(-8px) scale(1.02);
+          border-color: var(--primary-green);
+          box-shadow: 0 20px 40px rgba(103, 192, 144, 0.15);
         }
 
         .feature-card:hover::before {
-          opacity: 1;
+          opacity: 0.05;
         }
 
         .feature-icon {
-          font-size: 3.5rem;
+          font-size: 3rem;
           background: var(--gradient-primary);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
           margin-bottom: 1.5rem;
           display: block;
-          transition: all 0.4s ease;
-          filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
+          transition: all 0.3s ease;
+          position: relative;
         }
 
         .feature-card:hover .feature-icon {
-          transform: scale(1.2) rotate(10deg);
+          transform: scale(1.1);
+        }
+
+        .feature-atom {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          width: 40px;
+          height: 40px;
+          opacity: 0.2;
         }
 
         .feature-title {
-          font-size: 1.6rem;
+          font-size: 1.5rem;
           font-weight: 700;
           margin-bottom: 1rem;
-          color: var(--text-light);
-          position: relative;
+          color: var(--text-dark);
         }
 
         .feature-desc {
           color: var(--text-muted);
-          line-height: 1.8;
-          font-size: 1.05rem;
+          line-height: 1.7;
+          font-size: 1rem;
         }
 
         .stats {
           padding: 100px 0;
           background: var(--primary-dark);
           position: relative;
+          color: var(--text-light);
+          overflow: hidden;
         }
 
         .stats::before {
@@ -872,49 +937,58 @@ const LandingPage = () => {
           padding: 20px;
         }
 
+        .stat-atom {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          width: 30px;
+          height: 30px;
+          opacity: 0.3;
+        }
+
         .stat-number {
-          font-size: 4rem;
+          font-size: 3.5rem;
           font-weight: 900;
-          background: var(--gradient-primary);
+          background: var(--gradient-accent);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
           display: block;
           line-height: 1;
           margin-bottom: 0.5rem;
-          text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .stat-label {
-          color: var(--text-muted);
-          font-size: 1.1rem;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 1rem;
           text-transform: uppercase;
-          letter-spacing: 1.5px;
-          font-weight: 600;
+          letter-spacing: 1px;
+          font-weight: 500;
         }
 
         .use-cases {
           padding: 120px 0;
-          background: var(--secondary-dark);
+          background: linear-gradient(135deg, #f8fffe 0%, #f0f9f4 100%);
           position: relative;
+          overflow: hidden;
         }
 
         .use-case-item {
-          background: rgba(8, 28, 21, 0.7);
-          border-left: 5px solid var(--accent-teal);
+          background: var(--text-light);
+          border-left: 4px solid var(--primary-green);
           padding: 35px 30px;
           margin-bottom: 30px;
-          border-radius: 0 20px 20px 0;
+          border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;
           transition: all 0.4s ease;
           position: relative;
           overflow: hidden;
-          backdrop-filter: blur(5px);
+          box-shadow: 0 5px 25px rgba(18, 65, 112, 0.06);
         }
 
         .use-case-item:hover {
-          background: rgba(8, 28, 21, 0.9);
-          transform: translateX(15px);
-          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+          transform: translateX(10px);
+          box-shadow: var(--shadow-hover);
+          border-left-color: var(--primary-teal);
         }
 
         .use-case-item::before {
@@ -924,7 +998,7 @@ const LandingPage = () => {
           left: -100%;
           width: 100%;
           height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(45, 156, 219, 0.3), transparent);
+          background: linear-gradient(90deg, transparent, rgba(103, 192, 144, 0.1), transparent);
           transition: left 0.7s ease;
         }
 
@@ -939,19 +1013,29 @@ const LandingPage = () => {
           background-clip: text;
           font-size: 2.5rem;
           margin-bottom: 1.2rem;
-          transition: all 0.4s ease;
+          transition: all 0.3s ease;
           display: inline-block;
+          position: relative;
         }
 
         .use-case-item:hover .use-case-icon {
-          transform: scale(1.3);
+          transform: scale(1.2);
+        }
+
+        .use-case-atom {
+          position: absolute;
+          top: 15px;
+          right: 15px;
+          width: 35px;
+          height: 35px;
+          opacity: 0.2;
         }
 
         .use-case-title {
           font-size: 1.4rem;
           font-weight: 700;
           margin-bottom: 0.8rem;
-          color: var(--text-light);
+          color: var(--text-dark);
         }
 
         .use-case-desc {
@@ -959,14 +1043,223 @@ const LandingPage = () => {
           line-height: 1.7;
         }
 
-        
+        .electrolysis-section {
+          padding: 120px 0;
+          background: var(--primary-dark);
+          position: relative;
+          color: var(--text-light);
+          overflow: hidden;
+        }
+
+        .electrolysis-method {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(103, 192, 144, 0.2);
+          border-radius: var(--border-radius-lg);
+          padding: 40px 30px;
+          margin-bottom: 30px;
+          transition: all 0.4s ease;
+          backdrop-filter: blur(10px);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .electrolysis-method:hover {
+          transform: translateY(-5px);
+          border-color: var(--primary-green);
+          box-shadow: 0 20px 40px rgba(103, 192, 144, 0.1);
+        }
+
+        .electrolysis-method.active {
+          border-color: var(--primary-green);
+          background: rgba(103, 192, 144, 0.1);
+          transform: translateY(-5px);
+        }
+
+        .method-atom {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          width: 50px;
+          height: 50px;
+          opacity: 0.15;
+        }
+
+        .method-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 1.5rem;
+        }
+
+        .method-icon {
+          font-size: 2.5rem;
+          background: var(--gradient-accent);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          margin-right: 1rem;
+        }
+
+        .method-name {
+          font-size: 1.6rem;
+          font-weight: 700;
+          color: var(--text-light);
+          margin: 0;
+        }
+
+        .method-efficiency {
+          background: var(--gradient-primary);
+          color: var(--text-light);
+          padding: 4px 12px;
+          border-radius: 20px;
+          font-size: 0.9rem;
+          font-weight: 600;
+          margin-left: auto;
+        }
+
+        .method-description {
+          color: rgba(255, 255, 255, 0.9);
+          line-height: 1.7;
+          margin-bottom: 2rem;
+        }
+
+        .method-details {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 2rem;
+        }
+
+        .detail-group h5 {
+          color: var(--primary-green);
+          font-size: 1.1rem;
+          font-weight: 600;
+          margin-bottom: 0.8rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .detail-list {
+          list-style: none;
+          padding: 0;
+        }
+
+        .detail-list li {
+          color: rgba(255, 255, 255, 0.8);
+          padding: 0.3rem 0;
+          padding-left: 1.5rem;
+          position: relative;
+        }
+
+        .detail-list li::before {
+          content: '✓';
+          position: absolute;
+          left: 0;
+          color: var(--primary-green);
+          font-weight: bold;
+        }
+
+        .detail-list.disadvantages li::before {
+          content: '⚠';
+          color: #ff6b6b;
+        }
+
+        .process-flow {
+          padding: 80px 0;
+          background: linear-gradient(135deg, #f8fffe 0%, #f0f9f4 100%);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .process-step {
+          background: var(--text-light);
+          border-radius: var(--border-radius-lg);
+          padding: 30px;
+          text-align: center;
+          box-shadow: 0 5px 25px rgba(18, 65, 112, 0.06);
+          position: relative;
+          transition: all 0.3s ease;
+        }
+
+        .process-step:hover {
+          transform: translateY(-5px);
+          box-shadow: var(--shadow-hover);
+        }
+
+        .process-step::after {
+          content: '→';
+          position: absolute;
+          right: -30px;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 2rem;
+          color: var(--primary-green);
+          font-weight: bold;
+        }
+
+        .process-step:last-child::after {
+          display: none;
+        }
+
+        .process-atom {
+          position: absolute;
+          top: 15px;
+          right: 15px;
+          width: 40px;
+          height: 40px;
+          opacity: 0.15;
+        }
+
+        .process-icon {
+          background: var(--gradient-primary);
+          color: var(--text-light);
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 2rem;
+          margin: 0 auto 1.5rem;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .process-icon::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+          animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+          0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+          50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+          100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        }
+
+        .process-title {
+          font-size: 1.3rem;
+          font-weight: 700;
+          color: var(--text-dark);
+          margin-bottom: 0.8rem;
+        }
+
+        .process-desc {
+          color: var(--text-muted);
+          font-size: 0.95rem;
+          line-height: 1.6;
+        }
 
         .cta {
           padding: 120px 0;
-          background: linear-gradient(135deg, rgba(39, 174, 96, 0.2) 0%, rgba(45, 156, 219, 0.2) 100%);
+          background: var(--gradient-secondary);
           text-align: center;
           position: relative;
           overflow: hidden;
+          color: var(--text-light);
         }
 
         .cta::before {
@@ -976,48 +1269,140 @@ const LandingPage = () => {
           left: 0;
           width: 100%;
           height: 100%;
-          background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%2320B2AA" opacity="0.2"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+          background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23DDF4E7" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
           z-index: -1;
         }
 
         .cta h2 {
-          font-size: 3.5rem;
+          font-size: 3.2rem;
           font-weight: 800;
           margin-bottom: 1.5rem;
-          background: var(--gradient-primary);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          color: var(--text-light);
+          letter-spacing: -0.02em;
+          position: relative;
+        }
+
+        .cta-atom {
+          position: absolute;
+          top: 50%;
+          left: 20%;
+          width: 100px;
+          height: 100px;
+          opacity: 0.1;
+          animation: ctaAtomFloat 15s ease-in-out infinite;
+        }
+
+        .cta-atom:nth-child(2) {
+          left: 80%;
+          top: 30%;
+          animation-delay: -5s;
+        }
+
+        @keyframes ctaAtomFloat {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-30px) rotate(180deg); }
         }
 
         .cta p {
-          font-size: 1.3rem;
-          color: var(--text-muted);
+          font-size: 1.25rem;
+          color: rgba(255, 255, 255, 0.9);
           margin-bottom: 3rem;
           max-width: 700px;
           margin-left: auto;
           margin-right: auto;
         }
 
-        .wave-divider {
+        .interactive-map-section {
+          padding: 120px 0;
+          background: var(--text-light);
+          position: relative;
+          overflow: hidden;
+          
+        }
+
+        .interactive-map {
+          background: var(--text-light);
+          border-radius: var(--border-radius-lg);
+          padding: 0;
+          margin: 50px 0;
+          border: 1px solid rgba(103, 192, 144, 0.2);
+          position: relative;
+          height: ${mapExpanded ? '500px' : '300px'};
+          overflow: hidden;
+          box-shadow: var(--shadow-primary);
+          transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .interactive-map:hover {
+          border-color: var(--primary-green);
+          box-shadow: var(--shadow-hover);
+        }
+
+        .map-container {
+          width: 100%;
+          height: 100%;
+          border-radius: calc(var(--border-radius-lg) - 1px);
+          overflow: hidden;
+          position: relative;
+        }
+
+        .map-atoms {
           position: absolute;
-          bottom: 0;
+          top: 0;
           left: 0;
           width: 100%;
-          overflow: hidden;
-          line-height: 0;
-          transform: rotate(180deg);
+          height: 100%;
+          pointer-events: none;
+          z-index: 5;
         }
 
-        .wave-divider svg {
-          position: relative;
-          display: block;
-          width: calc(100% + 1.3px);
+        .map-atom {
+          position: absolute;
+          width: 60px;
           height: 60px;
+          opacity: 0.3;
+          animation: mapAtomFloat 12s ease-in-out infinite;
         }
 
-        .wave-divider .shape-fill {
-          fill: var(--primary-dark);
+        .map-atom:nth-child(1) { top: 20%; left: 15%; animation-delay: 0s; }
+        .map-atom:nth-child(2) { top: 70%; left: 70%; animation-delay: -4s; }
+        .map-atom:nth-child(3) { top: 40%; left: 80%; animation-delay: -8s; }
+
+        @keyframes mapAtomFloat {
+          0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+          33% { transform: translateY(-20px) rotate(120deg) scale(1.1); }
+          66% { transform: translateY(10px) rotate(240deg) scale(0.9); }
+        }
+
+        .map-expand-btn {
+          position: absolute;
+          bottom: 20px;
+          right: 20px;
+          background: var(--gradient-primary);
+          border: none;
+          color: white;
+          padding: 12px 24px;
+          border-radius: 50px;
+          font-weight: 600;
+          cursor: pointer;
+          z-index: 1000;
+          box-shadow: var(--shadow-primary);
+          transition: all 0.3s ease;
+        }
+
+        .map-expand-btn:hover {
+          transform: translateY(-3px);
+          box-shadow: var(--shadow-hover);
+        }
+
+        .map-overlay-content {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          text-align: center;
+          z-index: 10;
+          color: var(--text-dark);
         }
 
         .container {
@@ -1042,140 +1427,115 @@ const LandingPage = () => {
         .col-md-6 { flex: 0 0 50%; }
         .col-md-3 { flex: 0 0 25%; }
 
-        .d-flex {
-          display: flex;
-        }
-
-        .align-items-center {
-          align-items: center;
-        }
-
-        .justify-content-center {
-          justify-content: center;
-        }
-
-        .justify-content-between {
-          justify-content: space-between;
-        }
-
-        .gap-3 {
-          gap: 1rem;
-        }
-
-        .flex-wrap {
-          flex-wrap: wrap;
-        }
-
-        .text-center {
-          text-align: center;
-        }
-
-        .text-md-end {
-          text-align: right;
-        }
-
+        .d-flex { display: flex; }
+        .align-items-center { align-items: center; }
+        .justify-content-center { justify-content: center; }
+        .justify-content-between { justify-content: space-between; }
+        .gap-3 { gap: 1rem; }
+        .flex-wrap { flex-wrap: wrap; }
+        .text-center { text-align: center; }
         .mb-3 { margin-bottom: 1rem; }
         .mb-5 { margin-bottom: 3rem; }
         .me-2 { margin-right: 0.5rem; }
         .me-3 { margin-right: 1rem; }
         .mt-3 { margin-top: 1rem; }
+        .ms-2 { margin-left: 0.5rem; }
 
-        .text-success { color: var(--accent-green) !important; }
-        .text-muted { color: var(--text-muted) !important; }
-        .text-light { color: var(--text-light) !important; }
-
-        .badge {
-          display: inline-block;
-          padding: 0.35em 0.65em;
-          font-size: 0.75em;
-          font-weight: 700;
-          line-height: 1;
-          text-align: center;
-          white-space: nowrap;
-          vertical-align: baseline;
-          border-radius: 0.25rem;
-        }
-
-        .bg-success {
-          background: var(--gradient-primary) !important;
-          color: var(--text-light) !important;
-        }
-
-        .bg-dark {
-          background-color: var(--secondary-dark) !important;
-        }
-
-        .border-success {
-          border-color: var(--accent-green) !important;
-        }
-
-        .card {
-          border-radius: 0.5rem;
-          border: 1px solid rgba(255, 255, 255, 0.125);
-        }
-
-        .progress {
-          display: flex;
-          height: 1rem;
-          overflow: hidden;
-          font-size: 0.75rem;
-          background-color: var(--secondary-dark);
-          border-radius: 0.5rem;
-        }
-
-        .progress-bar {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          overflow: hidden;
-          color: #fff;
-          text-align: center;
-          white-space: nowrap;
-          transition: width 0.6s ease;
-          background: var(--gradient-primary);
-          border-radius: 0.5rem;
-        }
-
-        .ripple {
+        .section-atoms {
           position: absolute;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.4);
-          transform: scale(0);
-          animation: ripple-animation 0.6s linear;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
           pointer-events: none;
+          z-index: 1;
+          overflow: hidden;
         }
 
-        @keyframes ripple-animation {
-          to {
-            transform: scale(4);
-            opacity: 0;
+        .section-atom {
+          position: absolute;
+          opacity: 0.08;
+          animation: sectionAtomFloat 20s ease-in-out infinite;
+        }
+
+        .section-atom:nth-child(1) { top: 10%; left: 10%; width: 80px; height: 80px; animation-delay: 0s; }
+        .section-atom:nth-child(2) { top: 20%; right: 15%; width: 60px; height: 60px; animation-delay: -7s; }
+        .section-atom:nth-child(3) { bottom: 20%; left: 20%; width: 70px; height: 70px; animation-delay: -14s; }
+        .section-atom:nth-child(4) { bottom: 30%; right: 10%; width: 90px; height: 90px; animation-delay: -10s; }
+
+        @keyframes sectionAtomFloat {
+          0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+          25% { transform: translateY(-30px) rotate(90deg) scale(1.1); }
+          50% { transform: translateY(0px) rotate(180deg) scale(0.9); }
+          75% { transform: translateY(20px) rotate(270deg) scale(1.05); }
+        }
+
+        @media (max-width: 992px) {
+          .method-details {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+          }
+          
+          .process-step::after {
+            content: '↓';
+            right: 50%;
+            top: auto;
+            bottom: -30px;
+            transform: translateX(50%);
           }
         }
 
         @media (max-width: 768px) {
-          .hero-content h1 { font-size: 2.5rem; }
-          .hero-content p { font-size: 1.1rem; }
-          .section-title h2 { font-size: 2.5rem; }
-          .stat-number { font-size: 3rem; }
+          .hero {
+              padding: 80px 0 60px;
+              min-height: auto;
+              background-image: url('./images/dashboard_hero_image.webp');
+              background-size: cover;
+              background-position: center; 
+              background-color:transparent;
+            }
+                      
+          .hero-content h1 { 
+            font-size: 2.8rem; 
+          }
+          
+          .hero-content p { 
+            font-size: 1.1rem; 
+          }
+          
+          .section-title h2 { 
+            font-size: 2.5rem; 
+          }
+          
+          .stat-number { 
+            font-size: 2.8rem; 
+          }
+          
           .col-lg-6, .col-md-4, .col-md-6, .col-md-3 { 
             flex: 0 0 100%; 
           }
+          
           .interactive-map {
             height: 250px !important;
           }
+          
           .row {
             flex-direction: column;
           }
           
           .hero::before {
-            background: 
-              linear-gradient(
-                to bottom, 
-                var(--primary-dark) 0%, 
-                transparent 30%
-              ),
-              url('/images/hero_Image.webp') no-repeat center center;
-            background-size: cover;
+            width: 100%;
+            height: 40%;
+            bottom: 0;
+            top: auto;
+          }
+          
+          .electrolysis-section {
+            padding: 80px 0;
+          }
+          
+          .process-flow {
+            padding: 60px 0;
           }
         }
 
@@ -1184,9 +1544,11 @@ const LandingPage = () => {
             font-size: 2.2rem;
           }
           
-          .btn-primary-custom, .btn-outline-success-custom {
-            padding: 12px 25px;
-            font-size: 0.9rem;
+          .btn-primary-custom, .btn-outline-custom {
+            padding: 14px 28px;
+            font-size: 0.95rem;
+            width: 100%;
+            margin-bottom: 1rem;
           }
           
           .feature-icon {
@@ -1200,165 +1562,138 @@ const LandingPage = () => {
           .section-title h2 {
             font-size: 2rem;
           }
-        }
           
-        .interactive-map-section {
-          padding: 100px 0;
-          background: var(--primary-dark);
-          position: relative;
+          .method-header {
+            flex-direction: column;
+            text-align: center;
+          }
+          
+          .method-efficiency {
+            margin-left: 0;
+            margin-top: 0.5rem;
+          }
         }
-
-        .interactive-map {
-          background: var(--secondary-dark);
-          border-radius: 20px;
-          padding: 0;
-          margin: 50px 0;
-          border: 2px solid rgba(39, 174, 96, 0.3);
-          position: relative;
-          height: ${mapExpanded ? '500px' : '300px'};
-          overflow: hidden;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-          transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .interactive-map:hover {
-          border-color: var(--accent-teal);
-          box-shadow: var(--glow-secondary);
-        }
-
-        .map-container {
-          width: 100%;
-          height: 100%;
-          border-radius: 18px;
-          overflow: hidden;
-          position: relative;
-        }
-
-        .hydrogen-marker {
-          background: radial-gradient(circle, var(--accent-mint) 0%, var(--accent-teal) 100%);
-          border-radius: 50%;
-          box-shadow: 0 0 15px var(--accent-green);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-size: 14px;
-        }
-
-        .map-expand-btn {
-          position: absolute;
-          bottom: 20px;
-          right: 20px;
-          background: var(--gradient-primary);
-          border: none;
-          color: white;
-          padding: 10px 20px;
-          border-radius: 50px;
-          font-weight: 600;
-          cursor: pointer;
-          z-index: 1000;
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-          transition: all 0.3s ease;
-        }
-
-        .map-expand-btn:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .map-overlay-content {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          text-align: center;
-          z-index: 10;
-          color: white;
-        }
-      `}</style>
-
+      `}
+      </style>
+     
+      <div id="atom-container"></div>
       <div className="bg-animation"></div>
-      <div id="particle-container"></div>
-
+      
       {/* Hero Section */}
-      <section id="home" className="hero">
+      <section className="hero" ref={heroRef}>
         <div className="container">
           <div className="row align-items-center">
             <div className="col-lg-6">
               <div className="hero-content" ref={heroContentRef}>
-                <h1>Green Hydrogen Infrastructure Mapping & Optimization</h1>
-                <p>Visualize, analyze, and optimize hydrogen ecosystem development with our cutting-edge map-based platform. Drive strategic investments with data-driven insights for a sustainable energy future.</p>
+                <h1>Green Hydrogen Revolution</h1>
+                <p>Transforming renewable energy into sustainable fuel solutions for a cleaner tomorrow. Our advanced technology produces green hydrogen efficiently and cost-effectively.</p>
                 <div className="d-flex gap-3 flex-wrap">
-                  <button 
-                    className="btn btn-primary-custom"
-                    onClick={handleButtonClick}
-                  >
-                    <i className="fas fa-map-marked-alt me-2"></i>Explore Platform
+                  <button className="btn-primary-custom" onClick={handleButtonClick}>
+                    Start From strach <i className="fas fa-arrow-right ms-2"></i>
                   </button>
-                  <button 
-                    className="btn btn-outline-success-custom"
-                    onClick={handleButtonClick}
-                  >
-                    <i className="fas fa-play me-2"></i>Watch Demo
+                  <button className="btn-outline-custom" onClick={() => handleConvert}>
+                    convert existing <i className="fas fa-book-open ms-2"></i>
                   </button>
                 </div>
               </div>
             </div>
             <div className="col-lg-6">
-              <div className="hero-visual" ref={heroVisualRef}>
-                <div className="map-preview">
-                  <div className="hydrogen-3d-model" ref={threeDModelRef}>
-                    <div className="electron"></div>
-                    <div className="electron"></div>
-                    <div className="electron"></div>
-                  </div>
-                  <div className="pulse-dot"></div>
-                  <div className="pulse-dot"></div>
-                  <div className="pulse-dot"></div>
-                  <div className="map-overlay">
-                    <i className="fas fa-globe-americas fa-3x text-success mb-3"></i>
-                    <h4 className="text-light">Interactive Infrastructure Map</h4>
-                    <p className="text-muted">Real-time visualization of hydrogen assets</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <div className="hero-visual" ref={heroVisualRef}>
+    <div className="map-preview">
+      {/* Enhanced Hydrogen Network Animation */}
+      <div className="hydrogen-network">
+        {/* Canvas for Three.js animation */}
+        <canvas className="hydrogen-canvas" ref={threeDModelRef}></canvas>
+        
+        {/* Network connections */}
+        <div className="network-connections">
+          <div className="connection-line" style={{top: '30%', left: '40%', width: '25%', transform: 'rotate(30deg)'}}></div>
+          <div className="connection-line" style={{top: '60%', left: '65%', width: '20%', transform: 'rotate(-15deg)'}}></div>
+          <div className="connection-line" style={{top: '45%', left: '25%', width: '15%', transform: 'rotate(60deg)'}}></div>
+        </div>
+        
+        {/* Facility nodes */}
+        <div className="facility-node" style={{top: '30%', left: '40%'}}>
+          <div className="node-pulse"></div>
+          <div className="node-icon">🏭</div>
+          <div className="node-tooltip">Production Facility</div>
+        </div>
+        
+        <div className="facility-node" style={{top: '60%', left: '65%'}}>
+          <div className="node-pulse"></div>
+          <div className="node-icon">⚡</div>
+          <div className="node-tooltip">Energy Plant</div>
+        </div>
+        
+        <div className="facility-node" style={{top: '45%', left: '25%'}}>
+          <div className="node-pulse"></div>
+          <div className="node-icon">🔬</div>
+          <div className="node-tooltip">Research Center</div>
+        </div>
+        
+        {/* Energy particles moving between nodes */}
+        <div className="energy-flow">
+          <div className="energy-particle" style={{'--delay': '0s', '--path': 'node1-node2'}}></div>
+          <div className="energy-particle" style={{'--delay': '1.5s', '--path': 'node2-node3'}}></div>
+          <div className="energy-particle" style={{'--delay': '3s', '--path': 'node3-node1'}}></div>
+        </div>
+        
+        {/* Data points floating around */}
+        <div className="data-point" style={{top: '20%', left: '50%'}}>
+          <div className="data-value">H₂</div>
+        </div>
+        <div className="data-point" style={{top: '70%', left: '30%'}}>
+          <div className="data-value">O₂</div>
+        </div>
+        <div className="data-point" style={{top: '50%', left: '75%'}}>
+          <div className="data-value">H₂O</div>
+        </div>
+      </div>
+      
+      <div className="map-overlay">
+        <h3>Global Hydrogen Network</h3>
+        <p>Interactive production facilities map</p>
+        <button className="explore-btn" onClick={toggleMapView}>
+          {mapExpanded ? 'Collapse View' : 'Explore Network'}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="features">
-        <div className="wave-divider">
-          <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" className="shape-fill"></path>
-          </svg>
-        </div>
+      <section className="features" id="features">
         <div className="container">
-          <div className="section-title" ref={sectionTitleRef}>
-            <h2>Powerful Features</h2>
-            <p>Advanced tools for hydrogen infrastructure planning and optimization</p>
+          <div className="section-title">
+            <h2 ref={el => sectionTitlesRef.current[0] = el}>Why Choose Green Hydrogen?</h2>
+            <p>Our innovative approach combines cutting-edge technology with sustainable practices to deliver exceptional results</p>
           </div>
           <div className="row">
             <div className="col-md-4">
               <div className="feature-card" ref={el => featureCardsRef.current[0] = el}>
-                <i className="fas fa-network-wired feature-icon"></i>
-                <h3 className="feature-title">Network Planning</h3>
-                <p className="feature-desc">Plan and optimize hydrogen distribution networks to minimize costs while maximizing coverage and efficiency.</p>
+                <HydrogenAtom className="feature-atom" size={40} />
+                <i className="fas fa-leaf feature-icon"></i>
+                <h3 className="feature-title">Zero Emissions</h3>
+                <p className="feature-desc">Produce clean hydrogen with no carbon footprint using renewable energy sources like solar and wind power.</p>
               </div>
             </div>
             <div className="col-md-4">
               <div className="feature-card" ref={el => featureCardsRef.current[1] = el}>
-                <i className="fas fa-shield-alt feature-icon"></i>
-                <h3 className="feature-title">Regulatory Intelligence</h3>
-                <p className="feature-desc">Navigate complex regulatory landscapes with integrated policy data and compliance tracking across different jurisdictions.</p>
+                <HydrogenAtom className="feature-atom" size={40} />
+                <i className="fas fa-bolt feature-icon"></i>
+                <h3 className="feature-title">High Efficiency</h3>
+                <p className="feature-desc">Our advanced electrolysis technology achieves up to 95% efficiency in energy conversion.</p>
               </div>
             </div>
             <div className="col-md-4">
               <div className="feature-card" ref={el => featureCardsRef.current[2] = el}>
+                <HydrogenAtom className="feature-atom" size={40} />
                 <i className="fas fa-chart-line feature-icon"></i>
-                <h3 className="feature-title">Economic Analysis</h3>
-                <p className="feature-desc">Evaluate project viability with comprehensive cost-benefit analysis and ROI projections based on real-time market data.</p>
+                <h3 className="feature-title">Cost Effective</h3>
+                <p className="feature-desc">Reduce operational costs with our optimized production processes and scalable solutions.</p>
               </div>
             </div>
           </div>
@@ -1370,27 +1705,31 @@ const LandingPage = () => {
         <div className="container">
           <div className="row">
             <div className="col-md-3">
-              <div className="stat-item" ref={el => statsRefs.current[0] = el}>
+              <div className="stat-item" ref={el => statsItemsRef.current[0] = el}>
+                <HydrogenAtom className="stat-atom" size={30} />
                 <span className="stat-number">500+</span>
-                <div className="stat-label">Mapped Assets</div>
+                <span className="stat-label">Tons Produced</span>
               </div>
             </div>
             <div className="col-md-3">
-              <div className="stat-item" ref={el => statsRefs.current[1] = el}>
-                <span className="stat-number">$2.5B</span>
-                <div className="stat-label">Investment Optimized</div>
+              <div className="stat-item" ref={el => statsItemsRef.current[1] = el}>
+                <HydrogenAtom className="stat-atom" size={30} />
+                <span className="stat-number">85%</span>
+                <span className="stat-label">Efficiency Rate</span>
               </div>
             </div>
             <div className="col-md-3">
-            <div className="stat-item" ref={el => statsRefs.current[2] = el}>
-                <span className="stat-number">15</span>
-                <div className="stat-label">Countries Covered</div>
+              <div className="stat-item" ref={el => statsItemsRef.current[2] = el}>
+                <HydrogenAtom className="stat-atom" size={30} />
+                <span className="stat-number">120+</span>
+                <span className="stat-label">Projects Completed</span>
               </div>
             </div>
             <div className="col-md-3">
-              <div className="stat-item" ref={el => statsRefs.current[3] = el}>
-                <span className="stat-number">95%</span>
-                <div className="stat-label">Cost Reduction</div>
+              <div className="stat-item" ref={el => statsItemsRef.current[3] = el}>
+                <HydrogenAtom className="stat-atom" size={30} />
+                <span className="stat-number">2.5M+</span>
+                <span className="stat-label">CO₂ Reduced</span>
               </div>
             </div>
           </div>
@@ -1398,40 +1737,141 @@ const LandingPage = () => {
       </section>
 
       {/* Use Cases Section */}
-      <section id="users" className="use-cases">
-        <div className="wave-divider">
-          <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" className="shape-fill"></path>
-          </svg>
-        </div>
+      <section className="use-cases">
         <div className="container">
           <div className="section-title">
-            <h2>Who Uses HydroMap Pro</h2>
-            <p>Empowering key stakeholders in the hydrogen economy</p>
+            <h2 ref={el => sectionTitlesRef.current[1] = el}>Applications of Green Hydrogen</h2>
+            <p>Discover how green hydrogen is transforming industries across the globe</p>
           </div>
           <div className="row">
-            <div className="col-lg-6">
+            <div className="col-md-6">
               <div className="use-case-item" ref={el => useCasesRef.current[0] = el}>
-                <i className="fas fa-city use-case-icon"></i>
-                <h4 className="use-case-title">Urban & Regional Planners</h4>
-                <p className="use-case-desc">Plan sustainable hydrogen infrastructure integration into existing urban frameworks and regional development strategies.</p>
-              </div>
-              <div className="use-case-item" ref={el => useCasesRef.current[1] = el}>
-                <i className="fas fa-bolt use-case-icon"></i>
-                <h4 className="use-case-title">Energy Companies</h4>
-                <p className="use-case-desc">Identify optimal locations for hydrogen production, storage, and distribution to maximize operational efficiency and market reach.</p>
+                <HydrogenAtom className="use-case-atom" size={35} />
+                <i className="fas fa-car use-case-icon"></i>
+                <h3 className="use-case-title">Transportation Fuel</h3>
+                <p className="use-case-desc">Power fuel cell vehicles with zero emissions and fast refueling capabilities for a sustainable transportation future.</p>
               </div>
             </div>
-            <div className="col-lg-6">
-              <div className="use-case-item" ref={el => useCasesRef.current[2] = el}>
-                <i className="fas fa-hammer use-case-icon"></i>
-                <h4 className="use-case-title">Project Developers</h4>
-                <p className="use-case-desc">Accelerate project development with comprehensive site analysis, risk assessment, and stakeholder mapping tools.</p>
+            <div className="col-md-6">
+              <div className="use-case-item" ref={el => useCasesRef.current[1] = el}>
+                <HydrogenAtom className="use-case-atom" size={35} />
+                <i className="fas fa-industry use-case-icon"></i>
+                <h3 className="use-case-title">Industrial Processes</h3>
+                <p className="use-case-desc">Replace fossil fuels in manufacturing, refining, and chemical production with clean hydrogen alternatives.</p>
               </div>
+            </div>
+            <div className="col-md-6">
+              <div className="use-case-item" ref={el => useCasesRef.current[2] = el}>
+                <HydrogenAtom className="use-case-atom" size={35} />
+                <i className="fas fa-home use-case-icon"></i>
+                <h3 className="use-case-title">Energy Storage</h3>
+                <p className="use-case-desc">Store excess renewable energy as hydrogen for later use, enabling grid stability and reliable power supply.</p>
+              </div>
+            </div>
+            <div className="col-md-6">
               <div className="use-case-item" ref={el => useCasesRef.current[3] = el}>
-                <i className="fas fa-balance-scale use-case-icon"></i>
-                <h4 className="use-case-title">Policy Analysts</h4>
-                <p className="use-case-desc">Support evidence-based policy development with detailed infrastructure analysis and economic impact modeling.</p>
+                <HydrogenAtom className="use-case-atom" size={35} />
+                <i className="fas fa-plug use-case-icon"></i>
+                <h3 className="use-case-title">Power Generation</h3>
+                <p className="use-case-desc">Generate electricity through fuel cells or hydrogen turbines for clean, dispatchable power generation.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Electrolysis Methods Section */}
+      <section className="electrolysis-section">
+        <div className="container">
+          <div className="section-title">
+            <h2 ref={el => sectionTitlesRef.current[2] = el}>Advanced Electrolysis Technologies</h2>
+            <p>Our cutting-edge methods for producing green hydrogen efficiently</p>
+          </div>
+          <div className="row">
+            {electrolysisMethods.map((method, index) => (
+              <div className="col-md-4" key={index}>
+                <div 
+                  className={`electrolysis-method ${index === activeElectrolysis ? 'active' : ''}`}
+                  ref={el => electrolysisRef.current[index] = el}
+                >
+                  <HydrogenAtom className="method-atom" size={50} />
+                  <div className="method-header">
+                    <i className={`${method.icon} method-icon`}></i>
+                    <h4 className="method-name">{method.name}</h4>
+                    <span className="method-efficiency">{method.efficiency}</span>
+                  </div>
+                  <p className="method-description">{method.description}</p>
+                  <div className="method-details">
+                    <div className="detail-group">
+                      <h5>Advantages</h5>
+                      <ul className="detail-list">
+                        {method.advantages.map((adv, i) => (
+                          <li key={i}>{adv}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="detail-group">
+                      <h5>Considerations</h5>
+                      <ul className="detail-list disadvantages">
+                        {method.disadvantages.map((dis, i) => (
+                          <li key={i}>{dis}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Process Flow Section */}
+      <section className="process-flow">
+        <div className="container">
+          <div className="section-title">
+            <h2 ref={el => sectionTitlesRef.current[3] = el}>Our Production Process</h2>
+            <p>From renewable energy to clean hydrogen fuel</p>
+          </div>
+          <div className="row">
+            <div className="col-md-3">
+              <div className="process-step" ref={el => processStepsRef.current[0] = el}>
+                <HydrogenAtom className="process-atom" size={40} />
+                <div className="process-icon">
+                  <i className="fas fa-sun"></i>
+                </div>
+                <h3 className="process-title">Renewable Energy</h3>
+                <p className="process-desc">Harness solar and wind power to generate clean electricity</p>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="process-step" ref={el => processStepsRef.current[1] = el}>
+                <HydrogenAtom className="process-atom" size={40} />
+                <div className="process-icon">
+                  <i className="fas fa-tint"></i>
+                </div>
+                <h3 className="process-title">Water Supply</h3>
+                <p className="process-desc">Source and purify water for the electrolysis process</p>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="process-step" ref={el => processStepsRef.current[2] = el}>
+                <HydrogenAtom className="process-atom" size={40} />
+                <div className="process-icon">
+                  <i className="fas fa-bolt"></i>
+                </div>
+                <h3 className="process-title">Electrolysis</h3>
+                <p className="process-desc">Split water molecules into hydrogen and oxygen using electricity</p>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="process-step" ref={el => processStepsRef.current[3] = el}>
+                <HydrogenAtom className="process-atom" size={40} />
+                <div className="process-icon">
+                  <i className="fas fa-gas-pump"></i>
+                </div>
+                <h3 className="process-title">Distribution</h3>
+                <p className="process-desc">Store and transport hydrogen to end users efficiently</p>
               </div>
             </div>
           </div>
@@ -1439,87 +1879,56 @@ const LandingPage = () => {
       </section>
 
       {/* Interactive Map Section */}
-      <section id="demo" className="interactive-map-section">
+      <section className="interactive-map-section">
         <div className="container">
           <div className="section-title">
-            <h2>Experience the Platform</h2>
-            <p>Interactive preview of our hydrogen infrastructure mapping capabilities</p>
+            <h2 ref={el => sectionTitlesRef.current[4] = el}>Global Hydrogen Network</h2>
+            <p>Explore our worldwide production facilities and distribution network</p>
           </div>
           <div className="interactive-map">
             <div className="map-container" ref={mapContainerRef}>
-              {!mapExpanded && (
-                <div className="map-overlay-content">
-                  <i className="fas fa-play-circle fa-4x text-success mb-3"></i>
-                  <h4>Interactive Map Demo</h4>
-                  <p>Click to explore hydrogen infrastructure mapping</p>
-                </div>
-              )}
+              <div className="map-atoms">
+                <HydrogenAtom className="map-atom" size={60} />
+                <HydrogenAtom className="map-atom" size={60} />
+                <HydrogenAtom className="map-atom" size={60} />
+              </div>
             </div>
             <button className="map-expand-btn" onClick={toggleMapView}>
-              <i className={`fas fa-${mapExpanded ? 'compress' : 'expand'} me-2`}></i>
-              {mapExpanded ? 'Minimize Map' : 'Expand Map'}
+              {mapExpanded ? (
+                <><i className="fas fa-compress me-2"></i> Collapse Map</>
+              ) : (
+                <><i className="fas fa-expand me-2"></i> Expand Map</>
+              )}
             </button>
           </div>
         </div>
       </section>
 
-      {/* Impact Section */}
-      <section id="impact" className="stats">
+      {/* CTA Section */}
+      <section className="cta" ref={ctaRef}>
         <div className="container">
-          <div className="section-title text-center mb-5">
-            <h2 className="text-light">Transformative Impact</h2>
-          </div>
-          <div className="row">
-            <div className="col-md-4">
-              <div className="card card-dark text-center h-100" style={{padding: '2rem'}}>
-                <i className="fas fa-bullseye fa-3x text-success mb-3"></i>
-                <h4 className="text-light">Strategic Investment</h4>
-                <p className="text-muted">Direct capital to high-impact, high-yield infrastructure projects with precision targeting and risk assessment.</p>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card card-dark text-center h-100" style={{padding: '2rem'}}>
-                <i className="fas fa-recycle fa-3x text-success mb-3"></i>
-                <h4 className="text-light">Efficient Resource Use</h4>
-                <p className="text-muted">Avoid redundant investments and minimize costs and land use through intelligent infrastructure coordination.</p>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card card-dark text-center h-100" style={{padding: '2rem'}}>
-                <i className="fas fa-leaf fa-3x text-success mb-3"></i>
-                <h4 className="text-light">Net Zero Goals</h4>
-                <p className="text-muted">Facilitate coordinated growth of hydrogen networks supporting ambitious net zero climate targets.</p>
-              </div>
-            </div>
-          </div>
+          <HydrogenAtom className="cta-atom" size={100} />
+          <HydrogenAtom className="cta-atom" size={100} />
+          <h2>Ready to Join the Green Hydrogen Revolution?</h2>
+          <p>Start your journey towards sustainable energy solutions today. Our team of experts is ready to help you implement green hydrogen technology for your business needs.</p>
+          <button className="btn-primary-custom" onClick={handleButtonClick}>
+            Get Started Now <i className="fas fa-arrow-right ms-2"></i>
+          </button>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="cta">
+      {/* Footer */}
+      <footer className="text-center py-4" style={{background: 'var(--primary-dark)', color: 'var(--text-light)'}}>
         <div className="container">
-          <div ref={ctaRef}>
-            <h2 className="glow-text">Ready to Transform Hydrogen Infrastructure Planning?</h2>
-            <p>Join leading organizations already using HydroMap Pro to build the hydrogen economy of tomorrow.</p>
-            <div className="d-flex gap-3 justify-content-center flex-wrap">
-              <button 
-                className="btn btn-primary-custom"
-                style={{fontSize: '1.125rem', padding: '15px 40px'}}
-                onClick={handleButtonClick}
-              >
-                <i className="fas fa-rocket me-2"></i>Start Free Trial
-              </button>
-              <button 
-                className="btn btn-outline-success-custom"
-                style={{fontSize: '1.125rem', padding: '15px 40px'}}
-                onClick={handleButtonClick}
-              >
-                <i className="fas fa-calendar me-2"></i>Schedule Demo
-              </button>
-            </div>
+          <p>&copy; 2024 Green Hydrogen Solutions. All rights reserved.</p>
+          <div className="d-flex justify-content-center gap-3 mt-3">
+            <a href="#" style={{color: 'var(--text-light)'}}><i className="fab fa-facebook-f"></i></a>
+            <a href="#" style={{color: 'var(--text-light)'}}><i className="fab fa-twitter"></i></a>
+            <a href="#" style={{color: 'var(--text-light)'}}><i className="fab fa-linkedin-in"></i></a>
+            <a href="#" style={{color: 'var(--text-light)'}}><i className="fab fa-instagram"></i></a>
           </div>
         </div>
-      </section>
+      </footer>
     </>
   );
 };

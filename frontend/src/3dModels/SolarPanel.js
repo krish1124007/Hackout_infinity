@@ -687,7 +687,7 @@ const SolarPanel = ({ solarPanelCount = 1, electrolysisCount = 1, showControls =
         alpha: true,
         powerPreference: "high-performance"
       });
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(400,500);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setClearColor(0x000000, 0);
       renderer.shadowMap.enabled = true;
@@ -803,10 +803,18 @@ const SolarPanel = ({ solarPanelCount = 1, electrolysisCount = 1, showControls =
       if (cameraRef.current && rendererRef.current && mountRef.current) {
         const width = mountRef.current.clientWidth;
         const height = mountRef.current.clientHeight;
-        
-        cameraRef.current.aspect = width / height;
-        cameraRef.current.updateProjectionMatrix();
-        rendererRef.current.setSize(width, height);
+
+        console.log(`SolarPanel: Resize detected - Parent Width: ${width}, Height: ${height}`);
+
+        // Only resize if width and height are valid
+        if (width > 0 && height > 0) {
+          cameraRef.current.aspect = width / height;
+          cameraRef.current.updateProjectionMatrix();
+          rendererRef.current.setSize(width, height);
+          console.log(`SolarPanel: Renderer resized to ${width}x${height}, Aspect: ${cameraRef.current.aspect}`);
+        } else {
+          console.warn(`SolarPanel: Invalid dimensions for resize - Width: ${width}, Height: ${height}`);
+        }
       }
     };
 

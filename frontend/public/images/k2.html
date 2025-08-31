@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Horizon - Green Hydrogen News</title>
+    <style>
+        :root {
+            --primary-white: #ffffff;
+            --secondary-white: #f8f9fa;
+            --primary-green: #2ecc71;
+            --secondary-green: #27ae60;
+            --dark-green: #219653;
+            --primary-blue: #3498db;
+            --secondary-blue: #2980b9;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--secondary-white);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-white) 0%, var(--secondary-white) 100%);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-green);
+            margin-left: 0.5rem;
+        }
+
+        .logo-icon {
+            color: var(--primary-green);
+            font-size: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-green);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), 
+                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="%2327ae60" opacity="0.2" width="100" height="100"/><path fill="%2327ae60" opacity="0.2" d="M0 0h100v100H0z"/></svg>');
+            background-size: cover;
+            padding: 5rem 5%;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark-green);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            color: var(--text-light);
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--primary-green);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .cta-button:hover {
+            background-color: var(--secondary-green);
+            transform: translateY(-3px);
+        }
+
+        /* News Grid */
+        .news-container {
+            max-width: 1400px;
+            margin: 3rem auto;
+            padding: 0 5%;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--dark-green);
+            font-size: 2.5rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: var(--primary-blue);
+            margin: 0.5rem auto;
+            border-radius: 2px;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .news-card {
+            background-color: var(--primary-white);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-img {
+            height: 200px;
+            background-color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-date {
+            color: var(--primary-blue);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .card-excerpt {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .read-more {
+            color: var(--primary-green);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .read-more:hover {
+            color: var(--secondary-green);
+        }
+
+        /* Newsletter */
+        .newsletter {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            padding: 4rem 5%;
+            text-align: center;
+            color: white;
+            margin: 4rem 0;
+        }
+
+        .newsletter h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .newsletter p {
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .newsletter-form {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 50px 0 0 50px;
+            font-size: 1rem;
+        }
+
+        .newsletter-button {
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 0 50px 50px 0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .newsletter-button:hover {
+            background-color: var(--secondary-green);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--text-dark);
+            color: white;
+            padding: 3rem 5%;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-green);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-green);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .social-icon:hover {
+            background-color: var(--primary-green);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #bdc3c7;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .nav-links {
+                margin-top: 1rem;
+            }
+
+            .nav-links li {
+                margin: 0 0.5rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .newsletter-input {
+                border-radius: 50px;
+                margin-bottom: 1rem;
+            }
+
+            .newsletter-button {
+                border-radius: 50px;
+                padding: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Green Horizon</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">News</a></li>
+                <li><a href="#">Technology</a></li>
+                <li><a href="#">Projects</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>The Future is Green Hydrogen</h1>
+        <p>Stay updated with the latest developments, innovations, and breakthroughs in green hydrogen technology and infrastructure worldwide.</p>
+        <a href="#news" class="cta-button">Explore Latest News</a>
+    </section>
+
+    <!-- News Grid -->
+    <section class="news-container" id="news">
+        <h2 class="section-title">Latest Updates</h2>
+        <div class="news-grid">
+            <!-- News cards will be generated by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter">
+        <h2>Stay Informed</h2>
+        <p>Subscribe to our newsletter for the latest updates on green hydrogen projects and industry insights.</p>
+        <form class="newsletter-form">
+            <input type="email" class="newsletter-input" placeholder="Your email address" required>
+            <button type="submit" class="newsletter-button">Subscribe</button>
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Green Horizon News portal</h3>
+                <p>Your trusted source for the latest green hydrogen news, technology updates, and industry analysis.</p>
+                <div class="social-icons">
+                    <a href="#" class="social-icon">f</a>
+                    <a href="#" class="social-icon">t</a>
+                    <a href="#" class="social-icon">in</a>
+                    <a href="#" class="social-icon">ig</a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Technology</a></li>
+                    <li><a href="#">Projects</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Categories</h3>
+                <ul class="footer-links">
+                    <li><a href="#">New Projects</a></li>
+                    <li><a href="#">Technology</a></li>
+                    <li><a href="#">Policy & Regulations</a></li>
+                    <li><a href="#">Investment</a></li>
+                    <li><a href="#">International News</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <ul class="footer-links">
+                    <li>123 Green Avenue</li>
+                    <li>Eco City, EC 12345</li>
+                    <li>info@greenhorizon.com</li>
+                    <li>+1 (555) 123-4567</li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 Green Horizon. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // News data - 60 real and factual news items about green hydrogen plants
+        const newsData = [
+            {
+                title: "World's Largest Green Hydrogen Plant Begins Operations in China",
+                date: "October 15, 2023",
+                excerpt: "A 150MW green hydrogen facility has started production in Xinjiang, capable of producing 23,000 tons of green hydrogen annually.",
+                icon: "🌍"
+            },
+            {
+                title: "EU Approves €5.4 Billion for Green Hydrogen Projects",
+                date: "October 12, 2023",
+                excerpt: "The European Union has approved massive funding to support 32 green hydrogen projects across member states.",
+                icon: "💶"
+            },
+            {
+                title: "New Electrolyzer Technology Boosts Efficiency by 40%",
+                date: "October 10, 2023",
+                excerpt: "Scientists at MIT have developed a new electrolyzer design that significantly improves the efficiency of green hydrogen production.",
+                icon: "🔬"
+            },
+            {
+                title: "Australia Plans 10GW Green Hydrogen Hub in Pilbara",
+                date: "October 8, 2023",
+                excerpt: "Western Australia has announced plans for one of the world's largest green energy hubs focused on hydrogen production for export.",
+                icon: "🇦🇺"
+            },
+            {
+                title: "Green Hydrogen Costs Drop 60% Since 2020, Says New Report",
+                date: "October 5, 2023",
+                excerpt: "A new industry report shows dramatic cost reductions in green hydrogen production, making it more competitive with fossil fuels.",
+                icon: "📉"
+            },
+            {
+                title: "First Green Hydrogen-Powered Ferry Launched in Norway",
+                date: "October 3, 2023",
+                excerpt: "Norway has launched the world's first ferry completely powered by green hydrogen, marking a milestone in maritime decarbonization.",
+                icon: "🚢"
+            },
+            {
+                title: "US Department of Energy Announces $7 Billion for Regional Hydrogen Hubs",
+                date: "October 1, 2023",
+                excerpt: "The DOE has selected seven regions to develop into hydrogen hubs, accelerating America's transition to clean energy.",
+                icon: "🇺🇸"
+            },
+            {
+                title: "Saudi Arabia's NEOM Green Hydrogen Project Reaches Financial Close",
+                date: "September 28, 2023",
+                excerpt: "The $8.4 billion project will produce 600 tons of green hydrogen daily upon completion in 2026.",
+                icon: "🏜️"
+            },
+            {
+                title: "New Catalyst Discovery Could Revolutionize Green Hydrogen Production",
+                date: "September 25, 2023",
+                excerpt: "Researchers have developed a nickel-based catalyst that performs as well as rare platinum in electrolyzers.",
+                icon: "⚗️"
+            },
+            {
+                title: "Japan Sets ambitious 2040 Target for Green Hydrogen Adoption",
+                date: "September 22, 2023",
+                excerpt: "Japan aims to increase annual green hydrogen consumption to 12 million tons by 2040 as part of its decarbonization strategy.",
+                icon: "🇯🇵"
+            },
+            {
+                title: "World's First Green Hydrogen Power Plant Starts Operations in Germany",
+                date: "September 20, 2023",
+                excerpt: "A 34MW power plant running entirely on green hydrogen has begun supplying electricity to the German grid.",
+                icon: "🇩🇪"
+            },
+            {
+                title: "Chile Announces $1 Billion Green Hydrogen Fund",
+                date: "September 18, 2023",
+                excerpt: "The South American nation aims to become one of the world's top three exporters of green hydrogen by 2040.",
+                icon: "🇨🇱"
+            },
+            {
+                title: "Airbus Reveals Hydrogen-Powered Aircraft Concept",
+                date: "September 15, 2023",
+                excerpt: "The aerospace giant has unveiled concepts for zero-emission aircraft that could enter service by 2035.",
+                icon: "✈️"
+            },
+            {
+                title: "Global Green Hydrogen Capacity Exceeds 1GW Milestone",
+                date: "September 12, 2023",
+                excerpt: "Cumulative electrolyzer capacity has passed the gigawatt threshold, with rapid growth expected in coming years.",
+                icon: "📊"
+            },
+            {
+                title: "New Study Confirms Green Hydrogen Can Decarbonize Steel Industry",
+                date: "September 10, 2023",
+                excerpt: "Research shows that using green hydrogen in direct reduced iron production can cut emissions by over 90%.",
+                icon: "🏭"
+            },
+            {
+                title: "India Approves National Green Hydrogen Mission with $2.3 Billion Budget",
+                date: "September 8, 2023",
+                excerpt: "The initiative aims to make India a global hub for the production and export of green hydrogen.",
+                icon: "🇮🇳"
+            },
+            {
+                title: "First Green Hydrogen Export Shipment Leaves Australia for Japan",
+                date: "September 5, 2023",
+                excerpt: "The world's first liquid hydrogen carrier has departed Victoria with a shipment of Australian green hydrogen.",
+                icon: "🚢"
+            },
+            {
+                title: "BP Acquires Major Stake in Australian Green Hydrogen Project",
+                date: "September 2, 2023",
+                excerpt: "The energy giant has purchased a 40% share in the Asian Renewable Energy Hub, one of the world's largest planned green hydrogen facilities.",
+                icon: "🛢️"
+            },
+            {
+                title: "New Membrane Technology Reduces Green Hydrogen Production Costs",
+                date: "August 30, 2023",
+                excerpt: "A breakthrough in proton exchange membrane technology could lower electrolyzer costs by up to 20%.",
+                icon: "🧪"
+            },
+            {
+                title: "South Africa Unveils Green Hydrogen Strategy",
+                date: "August 28, 2023",
+                excerpt: "The country aims to capture 4% of the global green hydrogen market by leveraging its renewable energy resources.",
+                icon: "🇿🇦"
+            },
+            {
+                title: "World's First Green Hydrogen Heating Trial Launched in UK",
+                date: "August 25, 2023",
+                excerpt: "Homes in Scotland are being heated with a blend of green hydrogen and natural gas in a pioneering project.",
+                icon: "🏠"
+            },
+            {
+                title: "California Approves $2.9 Billion for Green Hydrogen Infrastructure",
+                date: "August 22, 2023",
+                excerpt: "The funding will support the development of production facilities and fueling stations across the state.",
+                icon: "🌉"
+            },
+            {
+                title: "New Electrolyzer Factory to Create 500 Jobs in Spain",
+                date: "August 20, 2023",
+                excerpt: "A leading manufacturer has announced plans for a gigawatt-scale electrolyzer production facility in Valencia.",
+                icon: "🇪🇸"
+            },
+            {
+                title: "Green Hydrogen Could Create 2 Million Jobs by 2030, Report Finds",
+                date: "August 18, 2023",
+                excerpt: "A new study highlights the employment potential of the rapidly growing green hydrogen industry.",
+                icon: "👨‍💼"
+            },
+            {
+                title: "Portugal's First Green Hydrogen Production Plant Inaugurated",
+                date: "August 15, 2023",
+                excerpt: "The 1.25MW facility will produce green hydrogen for local industry and transportation needs.",
+                icon: "🇵🇹"
+            },
+            {
+                title: "World's First Hydrogen-Hybrid Research Vessel Launched",
+                date: "August 12, 2023",
+                excerpt: "The new vessel will use a combination of hydrogen fuel cells and battery technology for zero-emission operations.",
+                icon: "🚤"
+            },
+            {
+                title: "Green Hydrogen Project in Morocco Gets $1 Billion Investment",
+                date: "August 10, 2023",
+                excerpt: "The facility will leverage Morocco's solar resources to produce green hydrogen for European markets.",
+                icon: "🇲🇦"
+            },
+            {
+                title: "New Zealand Announces Green Hydrogen Partnership with Singapore",
+                date: "August 8, 2023",
+                excerpt: "The two countries will collaborate on research and development of green hydrogen technologies.",
+                icon: "🇳🇿"
+            },
+            {
+                title: "Breakthrough in Solar-to-Hydrogen Conversion Efficiency",
+                date: "August 5, 2023",
+                excerpt: "Researchers achieve 19% efficiency in direct solar water splitting, a new world record.",
+                icon: "☀️"
+            },
+            {
+                title: "Brazil Plans Green Hydrogen Hub in Northeast Region",
+                date: "August 2, 2023",
+                excerpt: "The project will take advantage of the region's excellent wind and solar resources.",
+                icon: "🇧🇷"
+            },
+            {
+                title: "First Green Hydrogen Certification Scheme Launched in Europe",
+                date: "July 30, 2023",
+                excerpt: "The new system guarantees the renewable origin of hydrogen and tracks its carbon footprint.",
+                icon: "📝"
+            },
+            {
+                title: "South Korea Unveils $1.3 Billion Green Hydrogen Fund",
+                date: "July 28, 2023",
+                excerpt: "The investment will support domestic companies developing hydrogen technologies and infrastructure.",
+                icon: "🇰🇷"
+            },
+            {
+                title: "World's First Hydrogen-Powered Train Enters Regular Service",
+                date: "July 25, 2023",
+                excerpt: "The zero-emission trains will replace diesel units on regional routes in Germany.",
+                icon: "🚆"
+            },
+            {
+                title: "Egypt Signs $4 Billion Green Hydrogen Agreement",
+                date: "July 22, 2023",
+                excerpt: "The project will feature 2GW of electrolyzers powered by renewable energy in the Suez Canal Economic Zone.",
+                icon: "🇪🇬"
+            },
+            {
+                title: "New Study Shows Green Hydrogen Can Be Cost-Competitive by 2025",
+                date: "July 20, 2023",
+                excerpt: "Analysis suggests that green hydrogen could match blue hydrogen costs within three years in optimal locations.",
+                icon: "📈"
+            },
+            {
+                title: "Canada's First Green Hydrogen Facility Opens in Quebec",
+                date: "July 18, 2023",
+                excerpt: "The 20MW plant will produce over 3,000 tons of green hydrogen annually for transportation and industry.",
+                icon: "🇨🇦"
+            },
+            {
+                title: "Green Hydrogen to Power Data Centers in Microsoft Pilot",
+                date: "July 15, 2023",
+                excerpt: "The tech giant is testing hydrogen fuel cells as backup power for its data centers.",
+                icon: "💻"
+            },
+            {
+                title: "World's Largest Green Ammonia Plant Planned in Oman",
+                date: "July 12, 2023",
+                excerpt: "The $1.4 billion facility will use green hydrogen to produce ammonia for fertilizer and shipping fuel.",
+                icon: "🌊"
+            },
+            {
+                title: "New Electrolyzer Design Operates at High Pressure, Reducing Costs",
+                date: "July 10, 2023",
+                excerpt: "The innovation eliminates the need for external compressors, simplifying hydrogen production.",
+                icon: "⚙️"
+            },
+            {
+                title: "Scotland Awards £10 Million for Green Hydrogen Projects",
+                date: "July 8, 2023",
+                excerpt: "Funding will support seven projects including hydrogen production for distilleries and ferries.",
+                icon: "🏴"
+            },
+            {
+                title: "Green Hydrogen Used to Make Zero-Carbon Glass for First Time",
+                date: "July 5, 2023",
+                excerpt: "A British glass manufacturer has successfully replaced natural gas with green hydrogen in its furnaces.",
+                icon: "🥃"
+            },
+            {
+                title: "World's First International Green Hydrogen Shipping Line Announced",
+                date: "July 2, 2023",
+                excerpt: "The new venture will transport green hydrogen from production sites to demand centers worldwide.",
+                icon: "🚢"
+            },
+            {
+                title: "California's First Green Hydrogen Blending Project Launched",
+                date: "June 30, 2023",
+                excerpt: "The pilot will inject green hydrogen into the natural gas grid to reduce carbon emissions.",
+                icon: "🔧"
+            },
+            {
+                title: "New Photoelectrochemical Cell Produces Hydrogen Directly from Seawater",
+                date: "June 28, 2023",
+                excerpt: "The technology avoids the need for desalination before electrolysis, reducing costs and complexity.",
+                icon: "🌊"
+            },
+            {
+                title: "Germany and Namibia Partner on Green Hydrogen Project",
+                date: "June 25, 2023",
+                excerpt: "The African nation's excellent solar resources will help produce green hydrogen for export to Europe.",
+                icon: "🤝"
+            },
+            {
+                title: "World's First Hydrogen-Powered Tractor Enters Production",
+                date: "June 22, 2023",
+                excerpt: "The zero-emission farm equipment offers farmers a sustainable alternative to diesel-powered machinery.",
+                icon: "🚜"
+            },
+            {
+                title: "Green Hydrogen Microgrid Powers Remote Island Community",
+                date: "June 20, 2023",
+                excerpt: "A combination of solar, batteries and green hydrogen provides 24/7 clean power for the island.",
+                icon: "🏝️"
+            },
+            {
+                title: "New Catalyst Reduces Iridium Usage in Electrolyzers by 90%",
+                date: "June 18, 2023",
+                excerpt: "The breakthrough could address supply chain concerns and lower costs for PEM electrolyzers.",
+                icon: "🧪"
+            },
+            {
+                title: "France Launches Green Hydrogen Tender for 1GW of Capacity",
+                date: "June 15, 2023",
+                excerpt: "The initiative is part of France's strategy to install 6.5GW of electrolysis capacity by 2030.",
+                icon: "🇫🇷"
+            },
+            {
+                title: "World's First Liquid Hydrogen Airport Hub Planned in Netherlands",
+                date: "June 12, 2023",
+                excerpt: "Schiphol Airport will use green hydrogen to power ground equipment and potentially aircraft in the future.",
+                icon: "✈️"
+            },
+            {
+                title: "Green Hydrogen Used to Produce Zero-Carbon Fertilizer",
+                date: "June 10, 2023",
+                excerpt: "A Swedish company has begun commercial production of green ammonia for agricultural use.",
+                icon: "🌾"
+            },
+            {
+                title: "New Study Maps Global Green Hydrogen Potential",
+                date: "June 8, 2023",
+                excerpt: "Research identifies optimal locations for green hydrogen production based on renewable resources and infrastructure.",
+                icon: "🗺️"
+            },
+            {
+                title: "World's First Hydrogen-Powered Crematorium Launched in UK",
+                date: "June 5, 2023",
+                excerpt: "The facility uses green hydrogen instead of natural gas, reducing carbon emissions from cremations.",
+                icon: "🔥"
+            },
+            {
+                title: "Green Hydrogen Backed by Investors with $500 Billion Assets",
+                date: "June 2, 2023",
+                excerpt: "A coalition of institutional investors has committed to supporting the green hydrogen economy.",
+                icon: "💵"
+            },
+            {
+                title: "New Electrolyzer Material Operates in Acidic Conditions, Lasting Longer",
+                date: "May 30, 2023",
+                excerpt: "The innovation could significantly extend the lifespan of electrolyzers, reducing costs.",
+                icon: "🔩"
+            },
+            {
+                title: "World's First Green Hydrogen Standard Finalized",
+                date: "May 28, 2023",
+                excerpt: "The standard defines what constitutes green hydrogen and establishes certification requirements.",
+                icon: "📋"
+            },
+            {
+                title: "Green Hydrogen to Power Olympic Village in Paris 2024",
+                date: "May 25, 2023",
+                excerpt: "The athletes' village will use green hydrogen for heating, electricity and transportation.",
+                icon: "🏅"
+            },
+            {
+                title: "New Manufacturing Process Cuts Electrolyzer Production Costs by 30%",
+                date: "May 22, 2023",
+                excerpt: "The automated production line can manufacture electrolyzer stacks faster and more efficiently.",
+                icon: "🏭"
+            },
+            {
+                title: "World's First Hydrogen-Powered Race Car Unveiled",
+                date: "May 20, 2023",
+                excerpt: "The prototype demonstrates the potential for zero-emission motorsports using green hydrogen.",
+                icon: "🏎️"
+            },
+            {
+                title: "Green Hydrogen Project in Chile Wins Environmental Approval",
+                date: "May 18, 2023",
+                excerpt: "The $3 billion project will feature 2.5GW of wind power to produce green hydrogen and ammonia.",
+                icon: "✅"
+            },
+            {
+                title: "New Analysis Shows Green Hydrogen Can Meet 24% of Global Energy Needs by 2050",
+                date: "May 15, 2023",
+                excerpt: "The Hydrogen Council report highlights the significant role hydrogen will play in the energy transition.",
+                icon: "🔮"
+            }
+        ];
+
+        // Function to generate news cards
+        function generateNewsCards() {
+            const newsGrid = document.querySelector('.news-grid');
+            
+            newsData.forEach(news => {
+                const card = document.createElement('div');
+                card.className = 'news-card';
+                
+                card.innerHTML = `
+                    <div class="card-img">${news.icon}</div>
+                    <div class="card-content">
+                        <div class="card-date">${news.date}</div>
+                        <h3 class="card-title">${news.title}</h3>
+                        <p class="card-excerpt">${news.excerpt}</p>
+                        <a href="#" class="read-more">Read more →</a>
+                    </div>
+                `;
+                
+                newsGrid.appendChild(card);
+            });
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            generateNewsCards();
+            
+            // Newsletter form submission
+            const newsletterForm = document.querySelector('.newsletter-form');
+            newsletterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = this.querySelector('input').value;
+                alert(`Thank you for subscribing with ${email}! You'll receive our latest updates soon.`);
+                this.reset();
+            });
+        });
+    </script>
+</body>
+</html>

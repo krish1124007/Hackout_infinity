@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import axios from 'axios';
 
 // Fix for default markers in react-leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -16,8 +17,8 @@ const createCustomIcon = (color, iconName) => {
   return L.divIcon({
     className: 'custom-marker',
     html: `<div style="background-color: ${color}; width: 30px; height: 30px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center;">
-            <i class="fas ${iconName}" style="color: white; transform: rotate(45deg); font-size: 12px;"></i>
-          </div>`,
+             <i class="fas ${iconName}" style="color: white; transform: rotate(45deg); font-size: 12px;"></i>
+           </div>`,
     iconSize: [30, 30],
     iconAnchor: [15, 30],
   });
@@ -30,22 +31,34 @@ const PlantLocationMap = () => {
   const [plantData, setPlantData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedPlant, setSelectedPlant] = useState(null);
 
   useEffect(() => {
     const fetchPlantData = async () => {
       try {
-        const response = await fetch('https://hackout2025-backend-infinity.onrender.com/api/v1/user/findland');
-        const data = await response.json();
-        console.log(data);
-        
-        if (data.status === 200) {
-          setPlantData(data.data.data.landoptimizer.suggested_locations);
+        const response = await axios.post(
+          'https://hackout2025-backend-infinity.onrender.com/api/v1/user/findland',
+          {
+            data: {
+              latitude: 23.45,
+              longitude: 78.90,
+              capacity: 100
+            }
+          }
+        );
+
+        console.log(response.data);
+        const apiData = response.data;
+
+        // Corrected data extraction logic with robust checks
+        if (response.status === 200 && apiData?.data?.data?.landoptimizer?.suggested_locations) {
+          const fetchedData = apiData.data.data.landoptimizer.suggested_locations;
+          setPlantData(fetchedData);
         } else {
-          setError('Failed to fetch plant data');
+          setError('Failed to fetch plant data or data structure is incorrect.');
         }
       } catch (err) {
-        setError('Error connecting to the server');
+        console.error("Error fetching plant data:", err);
+        setError('Error connecting to the server. Please check the network or API.');
       } finally {
         setLoading(false);
       }
@@ -56,7 +69,7 @@ const PlantLocationMap = () => {
 
   if (loading) {
     return (
-      <div className="visualization-info card">
+      <div className="map-container">
         <div className="loading-spinner">
           <i className="fas fa-spinner fa-spin"></i>
           <p>Loading plant locations...</p>
@@ -67,7 +80,7 @@ const PlantLocationMap = () => {
 
   if (error) {
     return (
-      <div className="visualization-info card">
+      <div className="map-container">
         <div className="error-message">
           <i className="fas fa-exclamation-triangle"></i>
           <p>{error}</p>
@@ -78,10 +91,10 @@ const PlantLocationMap = () => {
 
   if (!plantData || plantData.length === 0) {
     return (
-      <div className="visualization-info card">
+      <div className="map-container">
         <div className="no-data">
           <i className="fas fa-map-marker-alt"></i>
-          <p>No plant locations available</p>
+          <p>No plant locations available based on the criteria.</p>
         </div>
       </div>
     );
@@ -92,186 +105,86 @@ const PlantLocationMap = () => {
   const centerLng = plantData.reduce((sum, plant) => sum + parseFloat(plant.plant_location.longitude), 0) / plantData.length;
 
   return (
-    <div className="visualization-section">
-      <div className="section-header">
-        <h2>Plant Location Analysis</h2>
-        <p>Optimal locations for green hydrogen production facilities</p>
-      </div>
-
-      <div className="visualization-content">
-        <div className="visualization-info card">
-          <h3>Strategic Plant Locations</h3>
-          <p>Our analysis identifies optimal locations for green hydrogen production based on multiple factors including proximity to renewable energy sources, land cost, transport infrastructure, and nearby consumers.</p>
-          
-          <div className="map-legend">
-            <div className="legend-item">
-              <div className="legend-color" style={{ backgroundColor: '#4CAF50' }}></div>
-              <span>Production Plants</span>
-            </div>
-            <div className="legend-item">
-              <div className="legend-color" style={{ backgroundColor: '#2196F3' }}></div>
-              <span>Industrial Consumers</span>
-            </div>
-          </div>
-          
-          <div className="plant-selector">
-            <label htmlFor="plant-select">Select a plant:</label>
-            <select 
-              id="plant-select"
-              onChange={(e) => setSelectedPlant(plantData[e.target.value])}
-              defaultValue=""
-            >
-              <option value="" disabled>Choose a location</option>
-              {plantData.map((plant, index) => (
-                <option key={index} value={index}>
-                  {plant.plant_location.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          {selectedPlant && (
-            <div className="plant-details">
-              <h4>{selectedPlant.plant_location.name}</h4>
-              <p><strong>Land Required:</strong> {selectedPlant.land_size_required}</p>
-              <p><strong>Optimized Cost:</strong> {selectedPlant.optimized_cost_estimate}</p>
-              <p><strong>Key Factors:</strong></p>
-              <ul>
-                {selectedPlant.key_factors_considered.slice(0, 3).map((factor, idx) => (
-                  <li key={idx}>{factor.replace(/_/g, ' ')}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-
-        <div className="map-visualization card">
-          <MapContainer
-            center={[centerLat, centerLng]}
-            zoom={6}
-            style={{ height: '100%', width: '100%', borderRadius: '8px' }}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            
-            {plantData.map((plant, index) => (
-              <React.Fragment key={index}>
-                <Marker
-                  position={[parseFloat(plant.plant_location.latitude), parseFloat(plant.plant_location.longitude)]}
-                  icon={plantIcon}
-                  eventHandlers={{
-                    click: () => setSelectedPlant(plant),
-                  }}
-                >
-                  <Popup>
-                    <div className="map-popup">
-                      <h3>{plant.plant_location.name}</h3>
-                      <p><strong>Address:</strong> {plant.plant_location.address}</p>
-                      <p><strong>Land Required:</strong> {plant.land_size_required}</p>
-                      <p><strong>Optimized Cost:</strong> {plant.optimized_cost_estimate}</p>
-                      <button 
-                        className="btn-primary"
-                        onClick={() => setSelectedPlant(plant)}
-                      >
-                        View Details
-                      </button>
-                    </div>
-                  </Popup>
-                </Marker>
-                
-                {plant.nearby_consumers.map((consumer, consumerIndex) => (
-                  <Marker
-                    key={`consumer-${index}-${consumerIndex}`}
-                    position={[parseFloat(consumer.latitude), parseFloat(consumer.longitude)]}
-                    icon={consumerIcon}
-                  >
-                    <Popup>
-                      <div className="map-popup">
-                        <h3>{consumer.name}</h3>
-                        <p><strong>Industry:</strong> {consumer.industry_type}</p>
-                        <p><strong>Distance:</strong> {consumer.distance_from_plant}</p>
-                      </div>
-                    </Popup>
-                  </Marker>
-                ))}
-              </React.Fragment>
-            ))}
-          </MapContainer>
-        </div>
-      </div>
-
+    <div className="map-only-container">
       <style>
         {`
-          .map-visualization {
-            padding: 0;
+          .map-only-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+          }
+          
+          .map-container {
+            width: 100%;
             height: 600px;
-            min-height: 350px;
-            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+          }
+          
+          .leaflet-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            z-index: 1;
+          }
+          
+          .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
           }
           
           .map-legend {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: rgba(0, 0, 0, 0.03);
-            border-radius: 8px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
           }
           
           .legend-item {
             display: flex;
             align-items: center;
-            margin-bottom: 8px;
+            gap: 5px;
+            font-size: 12px;
           }
           
           .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            margin-right: 10px;
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
           }
           
-          .plant-selector {
-            margin: 20px 0;
+          .loading-spinner, .error-message, .no-data {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #6c757d;
           }
           
-          .plant-selector label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
+          .loading-spinner i, .error-message i, .no-data i {
+            font-size: 2rem;
+            margin-bottom: 10px;
           }
           
-          .plant-selector select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: white;
+          .loading-spinner i {
+            color: #0d6efd;
           }
           
-          .plant-details {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: rgba(76, 175, 80, 0.1);
-            border-radius: 8px;
+          .error-message i {
+            color: #dc3545;
           }
           
-          .plant-details h4 {
-            margin: 0 0 10px 0;
-            color: #2E7D32;
-          }
-          
-          .plant-details p {
-            margin: 5px 0;
-          }
-          
-          .plant-details ul {
-            margin: 5px 0;
-            padding-left: 20px;
-          }
-          
-          .plant-details li {
-            text-transform: capitalize;
+          .no-data i {
+            color: #198754;
           }
           
           .map-popup {
@@ -280,36 +193,78 @@ const PlantLocationMap = () => {
           
           .map-popup h3 {
             margin: 0 0 10px 0;
-            color: #2E7D32;
+            color: #198754;
+            font-size: 16px;
           }
           
           .map-popup p {
             margin: 5px 0;
+            font-size: 14px;
           }
           
-          .loading-spinner, .error-message, .no-data {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 200px;
-            color: #757575;
-          }
-          
-          .loading-spinner i, .error-message i, .no-data i {
-            font-size: 2rem;
-            margin-bottom: 15px;
-          }
-          
-          .error-message i {
-            color: #F44336;
-          }
-          
-          .no-data i {
-            color: #4CAF50;
-          }
+          @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
         `}
       </style>
+      
+      <div className="map-container">
+        <div className="map-controls">
+          <div className="map-legend">
+            <div className="legend-item">
+              <div className="legend-color" style={{ backgroundColor: '#4CAF50' }}></div>
+              <span>Plants</span>
+            </div>
+            <div className="legend-item">
+              <div className="legend-color" style={{ backgroundColor: '#2196F3' }}></div>
+              <span>Consumers</span>
+            </div>
+          </div>
+        </div>
+        
+        <MapContainer
+          center={[centerLat, centerLng]}
+          zoom={6}
+          style={{ height: '100%', width: '100%' }}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          
+          {plantData.map((plant, index) => (
+            <React.Fragment key={index}>
+              <Marker
+                position={[parseFloat(plant.plant_location.latitude), parseFloat(plant.plant_location.longitude)]}
+                icon={plantIcon}
+              >
+                <Popup>
+                  <div className="map-popup">
+                    <h3>{plant.plant_location.name}</h3>
+                    <p><strong>Address:</strong> {plant.plant_location.address}</p>
+                    <p><strong>Land Required:</strong> {plant.land_size_required}</p>
+                    <p><strong>Optimized Cost:</strong> {plant.optimized_cost_estimate}</p>
+                  </div>
+                </Popup>
+              </Marker>
+              
+              {plant.nearby_consumers.map((consumer, consumerIndex) => (
+                <Marker
+                  key={`consumer-${index}-${consumerIndex}`}
+                  position={[parseFloat(consumer.latitude), parseFloat(consumer.longitude)]}
+                  icon={consumerIcon}
+                >
+                  <Popup>
+                    <div className="map-popup">
+                      <h3>{consumer.name}</h3>
+                      <p><strong>Industry:</strong> {consumer.industry_type}</p>
+                      <p><strong>Distance:</strong> {consumer.distance_from_plant}</p>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
+            </React.Fragment>
+          ))}
+        </MapContainer>
+      </div>
     </div>
   );
 };

@@ -1,3 +1,236 @@
-.App {
-    background-color: #0A192F;
+/* App.css or a global stylesheet */
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+  
+  .main-layout {
+    display: flex;
+    min-height: 100vh; 
+  }
+  
+  .main-content {
+    flex-grow: 1; /* Allows the main content to take up the remaining space */
+    padding: 0;
+    overflow-y: auto;
+  }
+  /* Enhanced Hydrogen Network Styles */
+.hydrogen-network {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0a1a2a 0%, #1a3b5a 100%);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.hydrogen-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.7;
+}
+
+.network-connections {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.connection-line {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #67C090, transparent);
+  transform-origin: 0 0;
+  animation: connectionPulse 3s infinite;
+}
+
+@keyframes connectionPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.facility-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+.node-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  background: rgba(103, 192, 144, 0.2);
+  border-radius: 50%;
+  animation: nodePulse 2s infinite;
+}
+
+@keyframes nodePulse {
+  0% {
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+  }
+  100% {
+    width: 60px;
+    height: 60px;
+    opacity: 0;
+  }
+}
+
+.node-icon {
+  position: relative;
+  font-size: 20px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(103, 192, 144, 0.5);
+  z-index: 2;
+}
+
+.node-tooltip {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.facility-node:hover .node-tooltip {
+  opacity: 1;
+}
+
+.energy-flow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.energy-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #67C090;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #67C090;
+  opacity: 0;
+  animation: energyFlow 4s linear infinite var(--delay);
+}
+
+@keyframes energyFlow {
+  0% {
+    top: 30%;
+    left: 40%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  40% {
+    top: 60%;
+    left: 65%;
+    opacity: 0.8;
+  }
+  70% {
+    top: 45%;
+    left: 25%;
+    opacity: 0.5;
+  }
+  100% {
+    top: 30%;
+    left: 40%;
+    opacity: 0;
+  }
+}
+
+.data-point {
+  position: absolute;
+  animation: dataFloat 8s ease-in-out infinite;
+}
+
+@keyframes dataFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(10deg);
+  }
+}
+
+.data-value {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(103, 192, 144, 0.3);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #67C090;
+}
+
+.map-overlay {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(10, 26, 42, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid rgba(103, 192, 144, 0.3);
+  color: white;
+  z-index: 20;
+}
+
+.map-overlay h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+  background: linear-gradient(45deg, #67C090, #26667F);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.map-overlay p {
+  margin: 0 0 10px 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.explore-btn {
+  background: linear-gradient(45deg, #67C090, #26667F);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.explore-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(103, 192, 144, 0.4);
 }

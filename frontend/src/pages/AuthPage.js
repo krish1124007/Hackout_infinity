@@ -56,13 +56,13 @@ const AuthPage = () => {
         const data = await response.json();
         
         if (response.ok) {
-          setSuccessMessage('Login successful! Redirecting...');
+          setSuccessMessage('Welcome back! Redirecting to your dashboard...');
           // Store token and user data
-          localStorage.setItem('token', data.token);
+          localStorage.setItem('token', data.data.data);
           localStorage.setItem('user', JSON.stringify(data.user));
           // Redirect to dashboard after a brief delay
           setTimeout(() => {
-            window.location.href = '/dashboard';
+            window.location.href = '/qna';
           }, 1500);
         } else {
           setErrorMessage(data.message || 'Login failed. Please try again.');
@@ -90,7 +90,7 @@ const AuthPage = () => {
         const data = await response.json();
         
         if (response.ok) {
-          setSuccessMessage('Account created successfully! You can now login.');
+          setSuccessMessage('Welcome to the future of water management! You can now login.');
           // Switch to login form after successful registration
           setTimeout(() => {
             setIsLogin(true);
@@ -144,27 +144,27 @@ const AuthPage = () => {
   useEffect(() => {
     const createFloatingParticle = () => {
       const particle = document.createElement('div');
-      const size = Math.random() * 6 + 3;
+      const size = Math.random() * 8 + 4;
       particle.style.position = 'fixed';
       particle.style.width = size + 'px';
       particle.style.height = size + 'px';
-      particle.style.background = 'radial-gradient(circle, rgba(144,238,144,0.8) 0%, rgba(32,178,170,0.4) 70%, transparent 100%)';
+      particle.style.background = 'radial-gradient(circle, rgba(103, 192, 144, 0.8) 0%, rgba(38, 102, 127, 0.6) 50%, rgba(18, 65, 112, 0.4) 100%)';
       particle.style.borderRadius = '50%';
       particle.style.left = Math.random() * window.innerWidth + 'px';
       particle.style.top = window.innerHeight + 'px';
       particle.style.pointerEvents = 'none';
       particle.style.zIndex = '0';
-      particle.style.boxShadow = '0 0 10px 2px rgba(144, 238, 144, 0.5)';
+      particle.style.boxShadow = '0 0 12px 3px rgba(103, 192, 144, 0.6)';
       
       document.getElementById('auth-container').appendChild(particle);
       
-      const duration = Math.random() * 4000 + 3000;
-      const horizontalMovement = (Math.random() - 0.5) * 100;
+      const duration = Math.random() * 5000 + 4000;
+      const horizontalMovement = (Math.random() - 0.5) * 150;
       
       particle.animate([
         { transform: 'translateY(0px) translateX(0px)', opacity: 0 },
-        { transform: 'translateY(-30px) translateX(0px)', opacity: 0.8, offset: 0.1 },
-        { transform: `translateY(-${window.innerHeight + 200}px) translateX(${horizontalMovement}px)`, opacity: 0 }
+        { transform: 'translateY(-40px) translateX(0px)', opacity: 0.9, offset: 0.1 },
+        { transform: `translateY(-${window.innerHeight + 250}px) translateX(${horizontalMovement}px)`, opacity: 0 }
       ], {
         duration: duration,
         easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
@@ -173,7 +173,7 @@ const AuthPage = () => {
       };
     };
 
-    const interval = setInterval(createFloatingParticle, 600);
+    const interval = setInterval(createFloatingParticle, 500);
     return () => clearInterval(interval);
   }, []);
 
@@ -201,18 +201,18 @@ const AuthPage = () => {
     <>
       <style>{`
         :root {
-          --primary-dark: #081C15;
-          --secondary-dark: #1B4332;
-          --accent-teal: #2D9CDB;
-          --accent-green: #27AE60;
-          --accent-mint: #90EE90;
-          --accent-aqua: #20B2AA;
-          --text-light: #F8F9FA;
-          --text-muted: #ADB5BD;
-          --gradient-primary: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-teal) 100%);
-          --gradient-secondary: linear-gradient(135deg, var(--accent-mint) 0%, var(--accent-aqua) 100%);
-          --glow-primary: 0 0 20px rgba(39, 174, 96, 0.4);
-          --glow-secondary: 0 0 15px rgba(45, 156, 219, 0.3);
+          --primary-light: #DDF4E7;
+          --primary-green: #67C090;
+          --primary-teal: #26667F;
+          --primary-dark: #124170;
+          --text-light: #FFFFFF;
+          --text-muted: #B8BCC8;
+          --gradient-primary: linear-gradient(135deg, #67C090 0%, #26667F 100%);
+          --gradient-secondary: linear-gradient(135deg, #26667F 0%, #124170 100%);
+          --gradient-accent: linear-gradient(45deg, #67C090, #26667F, #124170);
+          --glow-primary: 0 0 30px rgba(103, 192, 144, 0.5);
+          --glow-secondary: 0 0 20px rgba(38, 102, 127, 0.4);
+          --shadow-deep: 0 25px 60px rgba(0, 0, 0, 0.4);
         }
 
         * {
@@ -224,9 +224,10 @@ const AuthPage = () => {
         body {
           background: var(--primary-dark);
           color: var(--text-light);
-          font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          font-family: 'Inter', 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           line-height: 1.6;
           overflow-x: hidden;
+          
         }
 
         #auth-container {
@@ -235,8 +236,20 @@ const AuthPage = () => {
           align-items: center;
           justify-content: center;
           position: relative;
-          overflow: hidden;
-          padding: 2rem;
+          overflow: hidden;          
+          width:100%;
+          background: url('./images/plant2.gif') cover no-repeat;
+        }
+        
+        #auth-container::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(135deg, rgba(18, 65, 112, 0.85) 0%, rgba(38, 102, 127, 0.8) 100%);
+          z-index: 0;
         }
 
         .auth-bg-animation {
@@ -246,12 +259,12 @@ const AuthPage = () => {
           width: 100%;
           height: 100%;
           z-index: -1;
-          opacity: 0.15;
+          opacity: 0.12;
           background: 
-            radial-gradient(circle at 20% 50%, var(--accent-aqua) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, var(--accent-green) 0%, transparent 50%),
-            radial-gradient(circle at 40% 80%, var(--accent-teal) 0%, transparent 50%);
-          animation: float 25s ease-in-out infinite;
+            radial-gradient(circle at 20% 50%, var(--primary-green) 0%, transparent 60%),
+            radial-gradient(circle at 80% 20%, var(--primary-teal) 0%, transparent 60%),
+            radial-gradient(circle at 40% 80%, var(--primary-dark) 0%, transparent 60%);
+          animation: float 30s ease-in-out infinite;
         }
 
         @keyframes float {
@@ -259,10 +272,10 @@ const AuthPage = () => {
             transform: translateY(0px) rotate(0deg) scale(1); 
           }
           33% { 
-            transform: translateY(-20px) rotate(120deg) scale(1.05);
+            transform: translateY(-30px) rotate(120deg) scale(1.05);
           }
           66% { 
-            transform: translateY(10px) rotate(240deg) scale(0.95);
+            transform: translateY(15px) rotate(240deg) scale(0.95);
           }
         }
 
@@ -270,10 +283,10 @@ const AuthPage = () => {
         .atom-container {
           position: absolute;
           top: 50%;
-          left: 20%;
+          left: 15%;
           transform: translateY(-50%);
-          width: 200px;
-          height: 200px;
+          width: 250px;
+          height: 250px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -282,62 +295,62 @@ const AuthPage = () => {
 
         .atom-nucleus {
           position: absolute;
-          width: 30px;
-          height: 30px;
-          background: radial-gradient(circle,rgb(255, 42, 0) 0%, rgb(255, 128, 0) 100%);
+          width: 35px;
+          height: 35px;
+          background: radial-gradient(circle, #67C090 0%, #26667F 100%);
           border-radius: 50%;
-          box-shadow: 0 0 20px rgb(255, 42, 0), 0 0 40px rgb(255, 128, 0);
-          animation: pulse-nucleus 3s ease-in-out infinite;
+          box-shadow: 0 0 25px #67C090, 0 0 45px #26667F;
+          animation: pulse-nucleus 4s ease-in-out infinite;
           z-index: 10;
         }
 
         .electron-orbit {
           position: absolute;
-          width: 150px;
-          height: 150px;
-          border: 1px solid rgba(163, 204, 228, 0.51);
+          width: 180px;
+          height: 180px;
+          border: 1px solid rgba(221, 244, 231, 0.4);
           border-radius: 50%;
-          animation: rotate-orbit 15s linear infinite;
+          animation: rotate-orbit 18s linear infinite;
         }
 
         .electron {
           position: absolute;
-          width: 12px;
-          height: 12px;
-          background: radial-gradient(circle, var(--accent-aqua) 0%, var(--accent-aqua) 100%);
+          width: 14px;
+          height: 14px;
+          background: radial-gradient(circle, var(--primary-light) 0%, var(--primary-green) 100%);
           border-radius: 50%;
-          box-shadow: 0 0 10px var(--accent-aqua), 0 0 20px var(--accent-aqua);
+          box-shadow: 0 0 12px var(--primary-light), 0 0 24px var(--primary-green);
           z-index: 5;
-          animation: orbit-electron 3s linear infinite;
+          animation: orbit-electron 3.5s linear infinite;
         }
 
         .energy-wave {
           position: absolute;
           border-radius: 50%;
-          border: 1px solid rgba(144, 238, 144, 0.1);
+          border: 1px solid rgba(103, 192, 144, 0.15);
         }
 
         .wave-1 {
           width: 100%;
           height: 100%;
-          animation: pulse-wave 5s ease-out infinite;
+          animation: pulse-wave 6s ease-out infinite;
         }
 
         .wave-2 {
           width: 130%;
           height: 130%;
-          animation: pulse-wave 5s ease-out 1.5s infinite;
+          animation: pulse-wave 6s ease-out 2s infinite;
         }
 
         .wave-3 {
           width: 160%;
           height: 160%;
-          animation: pulse-wave 5s ease-out 3s infinite;
+          animation: pulse-wave 6s ease-out 4s infinite;
         }
 
         @keyframes pulse-nucleus {
           0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.1); }
+          50% { transform: scale(1.15); }
         }
 
         @keyframes rotate-orbit {
@@ -349,13 +362,13 @@ const AuthPage = () => {
           0% {
             transform: 
               rotate(0deg) 
-              translateX(75px) 
+              translateX(90px) 
               rotate(0deg);
           }
           100% {
             transform: 
               rotate(360deg) 
-              translateX(75px) 
+              translateX(90px) 
               rotate(-360deg);
           }
         }
@@ -366,30 +379,39 @@ const AuthPage = () => {
             opacity: 1;
           }
           100% {
-            transform: scale(1.5);
+            transform: scale(1.6);
             opacity: 0;
           }
         }
 
-        .auth-card {
-          background: rgba(27, 67, 50, 0.9);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(39, 174, 96, 0.3);
-          border-radius: 20px;
-          padding: 2.5rem;
+        .main-content {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4rem;
+          max-width: 1400px;
           width: 100%;
-          max-width: 450px;
-          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), var(--glow-primary);
-          animation: slideUp 0.8s ease-out;
+          z-index: 10;
+        }
+
+        .auth-card {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(221, 244, 231, 0.3);
+          border-radius: 25px;
+          padding: 3rem;
+          width: 100%;
+          max-width: 520px;
+          box-shadow: var(--shadow-deep), var(--glow-primary);
+          animation: slideInRight 1s ease-out;
           position: relative;
           overflow: hidden;
-          z-index: 10;
           transition: all 0.4s ease;
         }
 
         .auth-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3), 0 0 30px rgba(39, 174, 96, 0.5);
+          transform: translateY(-8px);
+          box-shadow: 0 35px 80px rgba(0, 0, 0, 0.4), 0 0 40px rgba(103, 192, 144, 0.6);
         }
 
         .auth-card::before {
@@ -402,43 +424,60 @@ const AuthPage = () => {
           background: var(--gradient-primary);
         }
 
-        @keyframes slideUp {
+        .auth-card::after {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: conic-gradient(from 0deg, transparent, rgba(103, 192, 144, 0.1), transparent, rgba(38, 102, 127, 0.1), transparent);
+          animation: rotate 20s linear infinite;
+          z-index: -1;
+        }
+
+        @keyframes rotate {
+          100% { transform: rotate(360deg); }
+        }
+
+        @keyframes slideInRight {
           from {
             opacity: 0;
-            transform: translateY(40px) scale(0.95);
+            transform: translateX(60px) scale(0.95);
           }
           to {
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: translateX(0) scale(1);
           }
         }
 
         .auth-header {
           text-align: center;
-          margin-bottom: 2rem;
+          margin-bottom: 2.5rem;
         }
 
         .auth-logo {
-          font-weight: 700;
-          font-size: 2.5rem;
+          font-weight: 800;
+          font-size: 2.8rem;
           background: var(--gradient-primary);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
           text-shadow: var(--glow-secondary);
-          margin-bottom: 0.5rem;
-          letter-spacing: 1px;
+          margin-bottom: 0.8rem;
+          letter-spacing: 1.5px;
         }
 
         .auth-subtitle {
-          color: var(--text-muted);
-          font-size: 1.1rem;
+          color: var(--text-light);
+          font-size: 1.2rem;
+          font-weight: 500;
         }
 
         .auth-form {
           display: flex;
           flex-direction: column;
-          gap: 1.5rem;
+          gap: 1.8rem;
         }
 
         .form-group {
@@ -447,68 +486,74 @@ const AuthPage = () => {
 
         .form-input {
           width: 100%;
-          padding: 1rem 1rem 1rem 3rem;
-          background: rgba(8, 28, 21, 0.7);
-          border: 1px solid rgba(39, 174, 96, 0.2);
-          border-radius: 10px;
+          padding: 1.2rem 1.2rem 1.2rem 3.5rem;
+          background: rgba(18, 65, 112, 0.8);
+          border: 2px solid rgba(221, 244, 231, 0.2);
+          border-radius: 15px;
           color: var(--text-light);
-          font-size: 1rem;
-          transition: all 0.3s ease;
+          font-size: 1.1rem;
+          font-weight: 500;
+          transition: all 0.4s ease;
         }
 
         .form-input:focus {
           outline: none;
-          border-color: var(--accent-green);
-          box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.2);
-          transform: translateY(-2px);
+          border-color: var(--primary-green);
+          box-shadow: 0 0 0 4px rgba(103, 192, 144, 0.25);
+          transform: translateY(-3px);
+          background: rgba(18, 65, 112, 0.95);
         }
 
         .form-input::placeholder {
           color: var(--text-muted);
+          font-weight: 400;
         }
 
         .form-input-icon {
           position: absolute;
-          left: 1rem;
+          left: 1.2rem;
           top: 50%;
           transform: translateY(-50%);
-          color: var(--accent-teal);
-          transition: all 0.3s ease;
+          color: var(--primary-green);
+          font-size: 1.1rem;
+          transition: all 0.4s ease;
         }
 
         .form-group:focus-within .form-input-icon {
-          color: var(--accent-green);
-          transform: translateY(-50%) scale(1.1);
+          color: var(--primary-light);
+          transform: translateY(-50%) scale(1.15);
         }
 
         .auth-btn {
           background: var(--gradient-primary);
           border: none;
-          padding: 1rem;
-          border-radius: 10px;
+          padding: 1.3rem;
+          border-radius: 15px;
           color: var(--text-light);
-          font-weight: 600;
-          font-size: 1.1rem;
+          font-weight: 700;
+          font-size: 1.2rem;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.4s ease;
           position: relative;
           overflow: hidden;
-          margin-top: 0.5rem;
-          letter-spacing: 0.5px;
+          margin-top: 0.8rem;
+          letter-spacing: 0.8px;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 0.5rem;
+          gap: 0.8rem;
+          text-transform: uppercase;
+          box-shadow: 0 8px 25px rgba(103, 192, 144, 0.3);
         }
 
         .auth-btn:hover:not(:disabled) {
-          transform: translateY(-3px);
-          box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
-          letter-spacing: 1px;
+          transform: translateY(-4px);
+          box-shadow: 0 15px 35px rgba(103, 192, 144, 0.4);
+          letter-spacing: 1.2px;
         }
 
         .auth-btn:active {
-          transform: translateY(-1px);
+          transform: translateY(-2px);
         }
 
         .auth-btn:disabled {
@@ -518,78 +563,83 @@ const AuthPage = () => {
 
         .auth-toggle {
           text-align: center;
-          margin-top: 2rem;
-          color: var(--text-muted);
+          margin-top: 2.5rem;
+          color: var(--text-light);
+          font-size: 1.1rem;
         }
 
         .auth-toggle-btn {
           background: none;
           border: none;
-          color: var(--accent-teal);
+          color: var(--primary-light);
           cursor: pointer;
-          font-weight: 600;
+          font-weight: 700;
           text-decoration: underline;
           transition: all 0.3s ease;
-          padding: 0.25rem 0.5rem;
-          border-radius: 5px;
+          padding: 0.5rem 1rem;
+          border-radius: 8px;
+          font-size: 1.1rem;
         }
 
         .auth-toggle-btn:hover {
-          color: var(--accent-mint);
-          background: rgba(144, 238, 144, 0.1);
+          color: var(--primary-green);
+          background: rgba(221, 244, 231, 0.1);
+          text-decoration: none;
         }
 
         .message {
-          padding: 0.75rem;
-          border-radius: 8px;
-          margin-bottom: 1rem;
+          padding: 1rem;
+          border-radius: 12px;
+          margin-bottom: 1.5rem;
           text-align: center;
-          font-weight: 500;
+          font-weight: 600;
+          font-size: 1rem;
         }
 
         .error-message {
           background: rgba(220, 53, 69, 0.2);
           color: #f8d7da;
-          border: 1px solid rgba(220, 53, 69, 0.3);
+          border: 1px solid rgba(220, 53, 69, 0.4);
         }
 
         .success-message {
           background: rgba(25, 135, 84, 0.2);
           color: #d1e7dd;
-          border: 1px solid rgba(25, 135, 84, 0.3);
+          border: 1px solid rgba(25, 135, 84, 0.4);
         }
 
         .floating-icon {
           position: absolute;
-          color: var(--accent-teal);
-          animation: floatIcon 5s ease-in-out infinite;
+          color: var(--primary-green);
+          animation: floatIcon 6s ease-in-out infinite;
           z-index: -1;
-          opacity: 0.7;
+          opacity: 0.6;
           transition: all 0.5s ease;
+          font-size: 2rem;
         }
 
         .floating-icon:hover {
           opacity: 1;
-          transform: scale(1.2);
-          color: var(--accent-mint);
+          transform: scale(1.3);
+          color: var(--primary-light);
         }
 
-        .floating-icon:nth-child(1) { top: 20%; left: 15%; animation-delay: 0s; }
-        .floating-icon:nth-child(2) { top: 70%; left: 80%; animation-delay: 1s; }
-        .floating-icon:nth-child(3) { top: 50%; left: 60%; animation-delay: 2s; }
-        .floating-icon:nth-child(4) { top: 30%; left: 70%; animation-delay: 3s; }
+        .floating-icon:nth-child(1) { top: 15%; right: 10%; animation-delay: 0s; }
+        .floating-icon:nth-child(2) { top: 75%; right: 15%; animation-delay: 1.5s; }
+        .floating-icon:nth-child(3) { top: 45%; right: 5%; animation-delay: 3s; }
+        .floating-icon:nth-child(4) { top: 25%; right: 25%; animation-delay: 4.5s; }
 
         @keyframes floatIcon {
           0%, 100% { 
             transform: translateY(0px) translateX(0px) rotate(0deg) scale(1); 
-            opacity: 0.7; 
+            opacity: 0.6; 
           }
           33% { 
-            transform: translateY(-15px) translateX(5px) rotate(5deg) scale(1.1); 
+            transform: translateY(-20px) translateX(8px) rotate(8deg) scale(1.15); 
             opacity: 1; 
           }
           66% { 
-            transform: translateY(-5px) translateX(-5px) rotate(-5deg) scale(0.9); 
+            transform: translateY(-8px) translateX(-8px) rotate(-8deg) scale(0.9); 
             opacity: 0.8; 
           }
         }
@@ -597,7 +647,7 @@ const AuthPage = () => {
         .ripple {
           position: absolute;
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.3);
+          background: rgba(255, 255, 255, 0.4);
           transform: scale(0);
           animation: ripple-animation 0.6s linear;
           pointer-events: none;
@@ -610,13 +660,12 @@ const AuthPage = () => {
           }
         }
 
-        @media (max-width: 1200px) {
-          .atom-container {
-            left: 10%;
+        @media (max-width: 1400px) {
+          .main-content {
+            flex-direction: column;
+            gap: 3rem;
           }
-        }
-
-        @media (max-width: 992px) {
+          
           .atom-container {
             display: none;
           }
@@ -628,7 +677,11 @@ const AuthPage = () => {
           }
           
           .auth-card {
-            padding: 2rem 1.5rem;
+            padding: 2rem;
+          }
+          
+          .auth-logo {
+            font-size: 2.2rem;
           }
         }
 
@@ -638,7 +691,7 @@ const AuthPage = () => {
           }
           
           .auth-logo {
-            font-size: 2rem;
+            font-size: 1.8rem;
           }
           
           .floating-icon {
@@ -654,130 +707,149 @@ const AuthPage = () => {
         <div id="atom-animation" className="atom-container"></div>
         
         <div className="floating-icon">
-          <i className="fas fa-industry fa-2x"></i>
+          <i className="fas fa-industry"></i>
         </div>
         <div className="floating-icon">
-          <i className="fas fa-wind fa-2x"></i>
+          <i className="fas fa-tint"></i>
         </div>
         <div className="floating-icon">
-          <i className="fas fa-warehouse fa-2x"></i>
+          <i className="fas fa-leaf"></i>
         </div>
         <div className="floating-icon">
-          <i className="fas fa-truck fa-2x"></i>
+          <i className="fas fa-chart-line"></i>
         </div>
 
-        <div className="auth-card">
-          <div className="auth-header">
-            <h1 className="auth-logo">HydroMap Pro</h1>
-            <p className="auth-subtitle">
-              {isLogin ? 'Sign in to access your account' : 'Create your company account'}
-            </p>
-          </div>
-
-          {errorMessage && (
-            <div className="message error-message">
-              <i className="fas fa-exclamation-circle"></i> {errorMessage}
+        <div className="main-content">
+          {/* Auth Card */}
+          <div className="auth-card">
+            <div className="auth-header">
+              <h1 className="auth-logo">HydroMap Pro</h1>
+              <p className="auth-subtitle">
+                {isLogin 
+                  ? 'Welcome back! Ready to make an impact?' 
+                  : 'Start your journey towards sustainable water management'
+                }
+              </p>
             </div>
-          )}
 
-          {successMessage && (
-            <div className="message success-message">
-              <i className="fas fa-check-circle"></i> {successMessage}
-            </div>
-          )}
+            {errorMessage && (
+              <div className="message error-message">
+                <i className="fas fa-exclamation-circle"></i> {errorMessage}
+              </div>
+            )}
 
-          <form className="auth-form" onSubmit={handleSubmit}>
-            {!isLogin && (
+            {successMessage && (
+              <div className="message success-message">
+                <i className="fas fa-check-circle"></i> {successMessage}
+              </div>
+            )}
+
+            <form className="auth-form" onSubmit={handleSubmit}>
+              {!isLogin && (
+                <div className="form-group">
+                  <i className="fas fa-building form-input-icon"></i>
+                  <input
+                    type="text"
+                    name="companyName"
+                    placeholder="Company Name"
+                    className="form-input"
+                    value={formData.companyName}
+                    onChange={handleInputChange}
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+              )}
+
               <div className="form-group">
-                <i className="fas fa-building form-input-icon"></i>
+                <i className="fas fa-envelope form-input-icon"></i>
                 <input
-                  type="text"
-                  name="companyName"
-                  placeholder="Company Name"
+                  type="email"
+                  name="email"
+                  placeholder="Email Address"
                   className="form-input"
-                  value={formData.companyName}
+                  value={formData.email}
                   onChange={handleInputChange}
                   required
                   disabled={isLoading}
                 />
               </div>
-            )}
 
-            <div className="form-group">
-              <i className="fas fa-envelope form-input-icon"></i>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                className="form-input"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                disabled={isLoading}
-              />
-            </div>
-
-            <div className="form-group">
-              <i className="fas fa-lock form-input-icon"></i>
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                className="form-input"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-                disabled={isLoading}
-              />
-            </div>
-
-            {!isLogin && (
               <div className="form-group">
                 <i className="fas fa-lock form-input-icon"></i>
                 <input
                   type="password"
-                  name="confirmPassword"
-                  placeholder="Confirm Password"
+                  name="password"
+                  placeholder="Password"
                   className="form-input"
-                  value={formData.confirmPassword}
+                  value={formData.password}
                   onChange={handleInputChange}
                   required
                   disabled={isLoading}
                 />
               </div>
-            )}
 
-            <button 
-              type="submit" 
-              className="auth-btn"
-              onClick={handleButtonClick}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <i className="fas fa-spinner fa-spin"></i>
-                  {isLogin ? 'Signing In...' : 'Creating Account...'}
-                </>
-              ) : (
-                <>
-                  {isLogin ? 'Sign In' : 'Create Account'}
-                </>
+              {!isLogin && (
+                <div className="form-group">
+                  <i className="fas fa-lock form-input-icon"></i>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
+                    className="form-input"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
               )}
-            </button>
-          </form>
 
-          <div className="auth-toggle">
-            <p>
-              {isLogin ? "Don't have an account? " : "Already have an account? "}
               <button 
-                type="button" 
-                className="auth-toggle-btn"
-                onClick={toggleForm}
+                type="submit" 
+                className="auth-btn"
+                onClick={handleButtonClick}
                 disabled={isLoading}
               >
-                {isLogin ? 'Sign Up' : 'Sign In'}
+                {isLoading ? (
+                  <>
+                    <i className="fas fa-spinner fa-spin"></i>
+                    {isLogin ? 'Signing In...' : 'Creating Your Future...'}
+                  </>
+                ) : (
+                  <>
+                    {isLogin ? (
+                      <>
+                        <i className="fas fa-sign-in-alt"></i>
+                        Access Your Dashboard
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-rocket"></i>
+                        Start Your Journey
+                      </>
+                    )}
+                  </>
+                )}
               </button>
-            </p>
+            </form>
+
+            <div className="auth-toggle">
+              <p>
+                {isLogin ? "Ready to transform your business? " : "Already part of the revolution? "}
+                <button 
+                  type="button" 
+                  className="auth-toggle-btn"
+                  onClick={toggleForm}
+                  disabled={isLoading}
+                >
+                    
+                  <div>
+                  {isLogin ?'Sign Up Here' : 'Sign In Here'}
+                  </div>
+                </button>
+              </p>
+            </div>
           </div>
         </div>
       </div>

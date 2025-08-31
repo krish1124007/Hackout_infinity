@@ -719,7 +719,7 @@ const WindPower = ({ windTurbineCount = 1, electrolysisCount = 1, showControls =
         alpha: true,
         powerPreference: "high-performance"
       });
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(400, 500);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setClearColor(0x000000, 0);
       renderer.shadowMap.enabled = true;
